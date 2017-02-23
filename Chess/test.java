@@ -10,44 +10,36 @@ import java.util.*;
  */
 public class test
 {
-    public static void main()
+    public static void mainTest()
     {
         Board b = new Board();
         
         b.resetBoard();
         
-        /*
-        Queen q = new Queen("White", 4, 4);
+        b.printBoard();
+    }
+    
+    public static void pawnTest()
+    {
+        Board b = new Board();
         
-        b.placePiece(q);
+        b.placePiece(new Pawn("White", 4,6));
         
-        b.placePiece(new Bishop("White", 1, 4));
+        b.placePiece(new Pawn("Black", 5,5));
         
-        b.placePiece(new Bishop("White", 2, 2));
+        ValidMoveList ml = b.getValidMoves(4,6);
         
-        b.placePiece(new Bishop("Black", 1, 7));
-        
-        b.placePiece(new Bishop("Black", 4, 1));
-        
-        b.placePiece(new Bishop("Black", 6, 4));
-        
-        ArrayList<Move> moves = b.getPossibleMoves(q);
-        
-        for(Move m: moves)
+        for(Move m : ml.getMoves())
         {
-            Square s = b.getSquare(m.getToX(), m.getToY());
-            
-            if(!s.hasPiece())
-            {
-                s.setSelectionStatus("S");
-            }
-            else if(m.isCapture())
-            {
-                s.setSelectionStatus("C");
-            }
+            b.getSquare(m.getToX(), m.getToY()).setSelectionStatus("M");
         }
-        */
+        for(Move m : ml.getCaptures())
+        {
+            b.getSquare(m.getToX(), m.getToY()).setSelectionStatus("C");
+        }
         
         b.printBoard();
     }
+    
+    
 }

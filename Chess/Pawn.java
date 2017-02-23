@@ -10,18 +10,9 @@ import java.util.*;
  */
 public class Pawn extends Piece
 {
-    public Pawn(String color, int x)
+    public Pawn(String color, int x, int y)
     {
-        super(color, x, 8);
-        
-        if (color.equals("White"))
-        {
-            setY(6);
-        }
-        else if (color.equals("Black"))
-        {
-            setY(1);
-        }
+        super(color, x, y);
     }
     
     // I should have a special rule/graphic associated with en passant. 
@@ -55,10 +46,16 @@ public class Pawn extends Piece
         m.add(forward);
         
         // ArrayList for the pawn's diagonal capture moves
-        ArrayList<Move> capture = new ArrayList<Move>();
-        capture.add(new Move(getX(), getY(), getX() + 1, getY() + mod));
-        capture.add(new Move(getX(), getY(), getX() - 1, getY() + mod));
-        m.add(capture);
+        ArrayList<Move> captures = new ArrayList<Move>();
+        if(getX() < 7)
+        {
+            captures.add(new Move(getX(), getY(), getX() + 1, getY() + mod));
+        }
+        if(getX() > 0)
+        {
+            captures.add(new Move(getX(), getY(), getX() - 1, getY() + mod));
+        }
+        m.add(captures);
         
         return m;
     }

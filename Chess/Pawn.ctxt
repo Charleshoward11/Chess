@@ -1,6 +1,6 @@
 #BlueJ class context
-comment0.params=color\ x
-comment0.target=Pawn(java.lang.String,\ int)
+comment0.params=color\ x\ y
+comment0.target=Pawn(java.lang.String,\ int,\ int)
 comment1.params=
 comment1.target=java.util.ArrayList\ getMoves()
 comment2.params=

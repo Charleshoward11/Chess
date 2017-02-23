@@ -55,9 +55,9 @@ public class Board implements Serializable
     /**
      * Requests a piece's moveset, then does a second pass on it to apply it to the board's current state.
      */
-    public ArrayList<Move> getPossibleMoves(Piece p)
+    public ValidMoveList getValidMoves(Piece p)
     {
-        ArrayList<Move> processedMoves = new ArrayList<Move>();
+        ValidMoveList processedMoves = new ValidMoveList();
         
         ArrayList<ArrayList<Move>> moves = p.getMoves();
         
@@ -67,7 +67,7 @@ public class Board implements Serializable
         {
             for(Move m : moves.get(0))
             {
-                processedMoves.add(m);
+                processedMoves.addMove(m);
             }
             moves.remove(0);
         }
@@ -103,15 +103,15 @@ public class Board implements Serializable
                         // then the move is marked as a capture and added to the list.
                         if(!p.getColor().equals(d.getColor()))
                         {
-                            m.setCapture(true);
-                            processedMoves.add(m);
+                            //m.setCapture(true);
+                            processedMoves.addCapture(m);
                         }
                         
                         // Regardless of whether this move is a capture or not, the piece can move no further in this direction.
                         break;
                     }
                     
-                    processedMoves.add(m);
+                    processedMoves.addMove(m);
                 }
             }
         }
@@ -127,50 +127,64 @@ public class Board implements Serializable
                     Piece d = board[m.getToX()][m.getToY()].getPiece();
                     
                     // If the piece on the destination square is the opposing color, 
-                    // then the move is marked as a capture and added to the list.
+                    // then the move is added to the list of captures.
                     if(!p.getColor().equals(d.getColor()))
                     {
-                        m.setCapture(true);
-                        processedMoves.add(m);
+                        //m.setCapture(true);
+                        processedMoves.addCapture(m);
                     }
                 }
                 else
                 {
-                    processedMoves.add(m);
+                    processedMoves.addCapture(m);
                 }
             }
         }
         else if(p.isPawn())
         {
-            // Pawns do their own thing
+            // Pawns just kinda do their own thing
             
             Move m = moves.get(0).get(0);
             
             if(!board[m.getToX()][m.getToY()].hasPiece())
             {
-                processedMoves.add(m);
+                processedMoves.addMove(m);
                 
-                m = moves.get(0).get(1);
-                if(!p.hasMoved() && !board[m.getToX()][m.getToY()].hasPiece())
+                if(!p.hasMoved() && (moves.get(0).size() == 2))
                 {
-                    processedMoves.add(m);
+                    m = moves.get(0).get(1);
+                    if(!board[m.getToX()][m.getToY()].hasPiece())
+                    {
+                        processedMoves.addMove(m);
+                    }
                 }
             }
             
             // Still need the captures
+            for(Move mm : moves.get(1))
+            {
+                Square s = board[mm.getToX()][mm.getToY()];
+                if(s.hasPiece())
+                {
+                    if(!p.getColor().equals(s.getPiece().getColor()))
+                    {
+                        processedMoves.addCapture(mm);
+                    }
+                }
+            }
         }
         
         return processedMoves;
     }
     
-    public ArrayList<Move> getPossibleMoves(Square s)
+    public ValidMoveList getValidMoves(Square s)
     {
-        return getPossibleMoves(s.getPiece());
+        return getValidMoves(s.getPiece());
     }
     
-    public ArrayList<Move> getPossibleMoves(int x, int y)
+    public ValidMoveList getValidMoves(int x, int y)
     {
-        return getPossibleMoves(board[x][y].getPiece());
+        return getValidMoves(board[x][y].getPiece());
     }
     
     public Square getSquare(int x, int y)
@@ -226,7 +240,7 @@ public class Board implements Serializable
         placePiece(new Rook("Black", 7, 0));
         for(int x = 0; x < 8; x++)
         {
-            placePiece(new Pawn("Black", x));
+            placePiece(new Pawn("Black", x, 1));
         }
         
         // White pieces
@@ -240,25 +254,48 @@ public class Board implements Serializable
         placePiece(new Rook("White", 7, 7));
         for(int x = 0; x < 8; x++)
         {
-            placePiece(new Pawn("White", x));
+            placePiece(new Pawn("White", x, 6));
         }
         
         return this;
     }
     
+    // Need a cloning method or something like that for all the methods dealing in potential moves.
+    
     /**
      * Takes in a color, and checks every possible move in that player's turn.
      * 
-     * 
-     * 
+     * @returns true if that player is in check.
      */
-    public boolean checkMate(String color)
+    public boolean checkCheck(String color)
     {
+        boolean check = false;
+        
         for(Square[] ss : board)
         {
-            
+            for(Square s : ss)
+            {
+                if(s.hasPiece())
+                {
+                    Piece p = s.getPiece();
+                
+                    if(!p.getColor().equals(color))
+                    {
+                        ValidMoveList ml = getValidMoves(p);
+                        
+                        for(Move c : ml.getCaptures())
+                        {
+                            Piece pp = board[c.getToX()][c.getToY()].getPiece();
+                            if(pp.isKing() && !pp.getColor().equals(color))
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
         }
-        return false;
+        
+        return check;
     }
-    
-}
+   }

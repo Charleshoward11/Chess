@@ -45,7 +45,7 @@ public class Move implements Serializable
         this.toY = to.getY();
         this.capture = capture;
     }
-
+    
     public int getFromX()
     {
         return this.fromX;
@@ -66,20 +66,20 @@ public class Move implements Serializable
         return this.toY;
     }
     
-    public boolean isCapture()
-    {
-        return this.capture;
-    }
+    //public boolean isCapture()
+    //{
+    //    return this.capture;
+    //}
     
-    public Move setCapture(boolean c)
-    {
-        this.capture = c;
-        
-        return this;
-    }
+    //public Move setCapture(boolean c)
+    //{
+    //    this.capture = c;
+    //    
+    //    return this;
+    //}
     
     public String toString()
     {
-        return "from " + this.fromX + "," + this.fromY + " to " +  this.toX + "," + this.toY;
+       return "from " + this.fromX + "," + this.fromY + " to " +  this.toX + "," + this.toY;
     }
 }
