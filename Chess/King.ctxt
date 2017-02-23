@@ -1,0 +1,16 @@
+#BlueJ class context
+comment0.params=color
+comment0.target=King(java.lang.String)
+comment0.text=\r\n\ Since\ there\ are\ only\ two\ kings\ on\ the\ board,\ \r\n\ you\ only\ actually\ need\ the\ color\ for\ the\ \r\n\ constructor\ to\ know\ where\ to\ put\ it.\r\n
+comment1.params=
+comment1.target=java.util.ArrayList\ getMoves()
+comment1.text=\r\n\ Castling\ is\ going\ to\ be\ tricky.\r\n
+comment2.params=c
+comment2.target=King\ setCheck(boolean)
+comment3.params=
+comment3.target=boolean\ isCheck()
+comment4.params=
+comment4.target=java.lang.String\ toString()
+comment5.params=
+comment5.target=boolean\ isKing()
+numComments=6

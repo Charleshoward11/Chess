@@ -1,0 +1,11 @@
+#BlueJ class context
+comment0.params=color\ x\ y
+comment0.target=Bishop(java.lang.String,\ int,\ int)
+comment1.params=
+comment1.target=java.util.ArrayList\ getMoves()
+comment1.text=\r\n\ This'll\ be\ fun.\r\n
+comment2.params=
+comment2.target=java.lang.String\ toString()
+comment3.params=
+comment3.target=boolean\ isBishop()
+numComments=4
