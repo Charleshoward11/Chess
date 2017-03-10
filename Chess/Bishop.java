@@ -17,6 +17,15 @@ public class Bishop extends Piece
         super(color, x, y);
     }
     
+    public Bishop clone()
+    {
+        Bishop copy = new Bishop(this.getColor(), this.getX(), this.getY());
+        
+        copy.setMoved(this.hasMoved());
+        
+        return copy;
+    }
+    
     /**
      * This'll be fun.
      */

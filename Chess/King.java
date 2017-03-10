@@ -12,23 +12,18 @@ public class King extends Piece
 {
     public boolean check;
     
-    /**
-     * Since there are only two kings on the board, 
-     * you only actually need the color for the 
-     * constructor to know where to put it.
-     */
-    public King(String color)
+    public King(String color, int x, int y)
     {
-        super(color, 4, 8);
+        super(color, x, y);
+    }
+    
+    public Piece clone()
+    {
+        King copy = new King(this.getColor(), this.getX(), this.getY());
         
-        if(color.equals("White"))
-        {
-            setY(7);
-        }
-        else if(color.equals("Black"))
-        {
-            setY(0);
-        }
+        copy.setMoved(this.hasMoved());
+        
+        return copy;
     }
     
     /**

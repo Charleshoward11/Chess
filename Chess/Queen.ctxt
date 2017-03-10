@@ -2,10 +2,12 @@
 comment0.params=color\ x\ y
 comment0.target=Queen(java.lang.String,\ int,\ int)
 comment1.params=
-comment1.target=java.util.ArrayList\ getMoves()
-comment1.text=\r\n\ This'll\ be\ fun.\r\n
+comment1.target=Queen\ clone()
 comment2.params=
-comment2.target=java.lang.String\ toString()
+comment2.target=java.util.ArrayList\ getMoves()
+comment2.text=\r\n\ This'll\ be\ fun.\r\n
 comment3.params=
-comment3.target=boolean\ isQueen()
-numComments=4
+comment3.target=java.lang.String\ toString()
+comment4.params=
+comment4.target=boolean\ isQueen()
+numComments=5

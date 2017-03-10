@@ -15,6 +15,15 @@ public class Pawn extends Piece
         super(color, x, y);
     }
     
+    public Pawn clone()
+    {
+        Pawn copy = new Pawn(this.getColor(), this.getX(), this.getY());
+        
+        copy.setMoved(this.hasMoved());
+        
+        return copy;
+    }
+    
     // I should have a special rule/graphic associated with en passant. 
     // If there's an opportunity for an en passant capture, fancy-looking text should appear above it.
     public ArrayList<ArrayList<Move>> getMoves()

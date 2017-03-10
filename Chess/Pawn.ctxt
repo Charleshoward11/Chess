@@ -2,9 +2,11 @@
 comment0.params=color\ x\ y
 comment0.target=Pawn(java.lang.String,\ int,\ int)
 comment1.params=
-comment1.target=java.util.ArrayList\ getMoves()
+comment1.target=Pawn\ clone()
 comment2.params=
-comment2.target=java.lang.String\ toString()
+comment2.target=java.util.ArrayList\ getMoves()
 comment3.params=
-comment3.target=boolean\ isPawn()
-numComments=4
+comment3.target=java.lang.String\ toString()
+comment4.params=
+comment4.target=boolean\ isPawn()
+numComments=5

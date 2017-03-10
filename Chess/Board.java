@@ -2,19 +2,27 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+
 /**
  * Write a description of class Board here.
  * 
  * @author (your name) 
  * @version (a version number or a date)
  */
-public class Board implements Serializable
+public class Board implements Serializable, Cloneable
 {
     private Square[][] board = new Square[8][8];
     
     // Maybe I should have ArrayLists for each color's pieces
     private ArrayList<Piece> whitePieces = new ArrayList<Piece>();
     private ArrayList<Piece> blackPieces = new ArrayList<Piece>();
+    
+    // If I'm going to have en passant capabilities, 
+    // there should probably be a variable here that stores a pawn that just double moved
     
     /**
      * Constructor for objects of class Board
@@ -30,26 +38,64 @@ public class Board implements Serializable
         }
     }
     
+    public Board clone(Board b)
+    {
+        Board copy = new Board();
+        
+        this.whitePieces = new ArrayList<Piece>();
+        this.blackPieces = new ArrayList<Piece>();
+        
+        for(int y = 0; y < 8; y++)
+        {
+            for(int x = 0; x < 8; x++)
+            {
+                if(this.getPiece(x,y) != null)
+                {
+                    copy.getSquare(x,y).setPiece(this.getPiece(x,y).clone());
+                }
+            }
+        }
+        
+        return copy;
+    }
+    
     /**
      * Prints out a text representation of the board to the console.
      * Used for testing.
      */
     public void printBoard()
     {
-        System.out.println("+----+----+----+----+----+----+----+----+");
+        System.out.println(" +--0-+--1-+--2-+--3-+--4-+--5-+--6-+--7-+");
         
         for(int y = 0; y < 8; y++)
         {
-            System.out.print("|");
+            System.out.print(" " + y);
             
             for(int x = 0; x < 8; x++)
             {
-                System.out.print(board[x][y] + "|");
+                System.out.print(board[x][y]);
+                if (x < 7)
+                    System.out.print("|");
             }
             
-            System.out.println();
-            System.out.println("+----+----+----+----+----+----+----+----+");
+            System.out.println(y);
+            if (y < 7)
+                System.out.println(" +----+----+----+----+----+----+----+----+");
         }
+        System.out.println(" +--0-+--1-+--2-+--3-+--4-+--5-+--6-+--7-+");
+    }
+    
+    public Board clearSelections()
+    {
+        for(Square[] ss : board)
+        {
+            for(Square s : ss)
+            {
+                s.setSelectionStatus(" ");
+            }
+        }
+        
+        return this;
     }
     
     /**
@@ -60,7 +106,6 @@ public class Board implements Serializable
         ValidMoveList processedMoves = new ValidMoveList();
         
         ArrayList<ArrayList<Move>> moves = p.getMoves();
-        
         
         // There's a LOT of other rules associated with castling, but I'll put those in later.
         if((p.isRook() || p.isKing()) && !p.hasMoved())
@@ -103,7 +148,6 @@ public class Board implements Serializable
                         // then the move is marked as a capture and added to the list.
                         if(!p.getColor().equals(d.getColor()))
                         {
-                            //m.setCapture(true);
                             processedMoves.addCapture(m);
                         }
                         
@@ -193,6 +237,14 @@ public class Board implements Serializable
     }
     
     /**
+     * I was doing this so much that there might as well be a method for it.
+     */
+    public Piece getPiece(int x, int y)
+    {
+        return board[x][y].getPiece();
+    }
+    
+    /**
      * Places a piece on the board based on the piece's internal x and y values.
      * 
      * Returns true if successful, false if not (e.g. if the requested square is occupied).
@@ -221,6 +273,87 @@ public class Board implements Serializable
     }
     
     /**
+     * Move a piece from one square to another.
+     * 
+     * Returns true if successful, false if not (e.g. if the requested square is occupied).
+     * Maybe this should throw an exception or something.
+     */
+    public boolean movePiece(int fX, int fY, int tX, int tY)
+    {
+        // Might be able to remove these two, as the board logically shouldn't be able to call this method with bad coordinates.
+        if(board[fX][fY].getPiece() == null)
+        {
+            return false;
+        }
+        
+        if(board[tX][tY].getPiece() != null && !board[tX][tY].getPiece().getColor().equals(board[fX][fY].getPiece().getColor()))
+        {
+            return false;
+        }
+        
+        Piece p = board[fX][fY].removePiece();
+        
+        p.setX(tX).setY(tY);
+        
+        return placePiece(p);
+    }
+    
+    public boolean movePiece(Move m)
+    {
+        return movePiece(m.getFromX(), m.getFromY(), m.getToX(), m.getToY());
+    }
+    
+    
+    
+    /**
+     * Sets up the board in the default starting state for chess.
+     */
+    public Board resetBoardOld()
+    {
+        // Maybe I can have two ArrayLists, one of each color of pieces.
+        // I add all the pieces to their respective lists, then use a for/each
+        // loop on each list to place the pieces on the board.
+        
+        // Black pieces
+        blackPieces.add(new Rook("Black",   0,0));
+        blackPieces.add(new Knight("Black", 1,0));
+        blackPieces.add(new Bishop("Black", 2,0));
+        blackPieces.add(new Queen("Black",  3,0));
+        blackPieces.add(new King("Black",   4,0));
+        blackPieces.add(new Bishop("Black", 5,0));
+        blackPieces.add(new Knight("Black", 6,0));
+        blackPieces.add(new Rook("Black",   7,0));
+        for(int x = 0; x < 8; x++)
+        {
+            blackPieces.add(new Pawn("Black", x,1));
+        }
+        for(Piece p : blackPieces)
+        {
+            placePiece(p);
+        }
+        
+        // White pieces
+        whitePieces.add(new Rook("White",   0,7));
+        whitePieces.add(new Knight("White", 1,7));
+        whitePieces.add(new Bishop("White", 2,7));
+        whitePieces.add(new Queen("White",  3,7));
+        whitePieces.add(new King("White",   4,7));
+        whitePieces.add(new Bishop("White", 5,7));
+        whitePieces.add(new Knight("White", 6,7));
+        whitePieces.add(new Rook("White",   7,7));
+        for(int x = 0; x < 8; x++)
+        {
+            whitePieces.add(new Pawn("White", x,6));
+        }
+        for(Piece p : whitePieces)
+        {
+            placePiece(p);
+        }
+        
+        return this;
+    }
+    
+    /**
      * Sets up the board in the default starting state for chess.
      */
     public Board resetBoard()
@@ -230,31 +363,31 @@ public class Board implements Serializable
         // loop on each list to place the pieces on the board.
         
         // Black pieces
-        placePiece(new Rook("Black", 0, 0));
-        placePiece(new Knight("Black", 1, 0));
-        placePiece(new Bishop("Black", 2, 0));
-        placePiece(new Queen("Black", 3, 0));
-        placePiece(new King("Black"));
-        placePiece(new Bishop("Black", 5, 0));
-        placePiece(new Knight("Black", 6, 0));
-        placePiece(new Rook("Black", 7, 0));
+        placePiece(new Rook("Black",    0,0));
+        placePiece(new Knight("Black",  1,0));
+        placePiece(new Bishop("Black",  2,0));
+        placePiece(new Queen("Black",   3,0));
+        placePiece(new King("Black",    4,0));
+        placePiece(new Bishop("Black",  5,0));
+        placePiece(new Knight("Black",  6,0));
+        placePiece(new Rook("Black",    7,0));
         for(int x = 0; x < 8; x++)
         {
-            placePiece(new Pawn("Black", x, 1));
+            placePiece(new Pawn("Black", x,1));
         }
         
         // White pieces
-        placePiece(new Rook("White", 0, 7));
-        placePiece(new Knight("White", 1, 7));
-        placePiece(new Bishop("White", 2, 7));
-        placePiece(new Queen("White", 3, 7));
-        placePiece(new King("White"));
-        placePiece(new Bishop("White", 5, 7));
-        placePiece(new Knight("White", 6, 7));
-        placePiece(new Rook("White", 7, 7));
+        placePiece(new Rook("White",    0,7));
+        placePiece(new Knight("White",  1,7));
+        placePiece(new Bishop("White",  2,7));
+        placePiece(new Queen("White",   3,7));
+        placePiece(new King("White",    4,7));
+        placePiece(new Bishop("White",  5,7));
+        placePiece(new Knight("White",  6,7));
+        placePiece(new Rook("White",    7,7));
         for(int x = 0; x < 8; x++)
         {
-            placePiece(new Pawn("White", x, 6));
+            placePiece(new Pawn("White", x,6));
         }
         
         return this;
@@ -263,14 +396,12 @@ public class Board implements Serializable
     // Need a cloning method or something like that for all the methods dealing in potential moves.
     
     /**
-     * Takes in a color, and checks every possible move in that player's turn.
+     * Takes in a color, and checks every possible move in the other player's turn.
      * 
-     * @returns true if that player is in check.
+     * @returns true if the player of the given color is in check.
      */
-    public boolean checkCheck(String color)
+    public boolean isInCheck(String color)
     {
-        boolean check = false;
-        
         for(Square[] ss : board)
         {
             for(Square s : ss)
@@ -286,8 +417,11 @@ public class Board implements Serializable
                         for(Move c : ml.getCaptures())
                         {
                             Piece pp = board[c.getToX()][c.getToY()].getPiece();
-                            if(pp.isKing() && !pp.getColor().equals(color))
+                            
+                            if(pp.isKing() && pp.getColor().equals(color))
                             {
+                                //System.out.println(color + " is in check.");
+                                
                                 return true;
                             }
                         }
@@ -296,6 +430,49 @@ public class Board implements Serializable
             }
         }
         
-        return check;
+        //System.out.println(color + " is not in check.");
+        
+        return false;
     }
-   }
+    
+    public boolean canCastle(King k, Rook r)
+    {
+        // I might need to make it so the method takes in two PIECES instead, 
+        // and checks if they're a king and a rook here. This might avoid crashes.
+        
+        // If either piece has moved
+        if(k.hasMoved() || r.hasMoved())
+        {
+            return false;
+        }
+        
+        // If other pieces are in the way
+        int i;
+        for(i = k.getX() - 1; i > r.getX(); i--)
+        {
+            if(board[i][k.getY()].getPiece() != null)
+            {
+                return false;
+            }
+        }
+        for(i = k.getX() + 1; i < r.getX(); i++)
+        {
+            if(board[i][k.getY()].getPiece() != null)
+            {
+                return false;
+            }
+        }
+        
+        
+        // If King is in check
+        
+        // If King would be moving into check
+        
+        // If King would be moving through check
+        
+        // If none of those were true
+        return true;
+    }
+    
+    //public boolean isThreatenedBy
+}

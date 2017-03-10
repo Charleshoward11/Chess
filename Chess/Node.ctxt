@@ -1,2 +1,4 @@
 #BlueJ class context
-numComments=0
+comment0.params=m\ b
+comment0.target=Node(Move,\ Board)
+numComments=1

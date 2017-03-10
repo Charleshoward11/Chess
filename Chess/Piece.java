@@ -8,7 +8,7 @@ import java.util.*;
  * @author (your name) 
  * @version (a version number or a date)
  */
-public abstract class Piece
+public abstract class Piece implements Cloneable
 {
     // Integers that store the piece's position on the board.
     private int x, y;
@@ -18,6 +18,8 @@ public abstract class Piece
     
     // Tells if the piece has moved, is used in castling and pawn double-moves.
     private boolean moved;
+    
+    // Maybe there should be a variable for the piece's point value. Can you overload variables?
     
     // This class should probably also function as the base actor class.
     
@@ -63,17 +65,21 @@ public abstract class Piece
         return this.y;
     }
     
-    /**
-     * Should this be here?
-     */
-    public boolean performMove(Move m)
+    public Piece setMoved(boolean m)
     {
-        return false;
+        this.moved = m;
+        
+        return this;
     }
     
     public boolean hasMoved()
     {
         return this.moved;
+    }
+    
+    public Piece clone()
+    {
+        return null;
     }
     
     /**
@@ -88,11 +94,11 @@ public abstract class Piece
     
     /**
      * I found the unicode characters for chess pieces, but they were all 1+1/2 spaces wide,
-     * so I also had to find the unicode character for 1/4 space.
+     * so I also had to find the unicode character for 1/4 space. It was a little annoying.
      */
     public abstract String toString();
     
-    // Each piece overloads one of these methods:
+    // Each piece overloads one of these methods.
     public boolean isKing(){return false;}
     public boolean isRook(){return false;}
     public boolean isPawn(){return false;}

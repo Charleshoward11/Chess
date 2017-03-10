@@ -10,10 +10,18 @@ import java.util.*;
  */
 public class Queen extends Piece
 {
-    
     public Queen(String color, int x, int y)
     {
         super(color, x, y);
+    }
+    
+    public Queen clone()
+    {
+        Queen copy = new Queen(this.getColor(), this.getX(), this.getY());
+        
+        copy.setMoved(this.hasMoved());
+        
+        return copy;
     }
     
     /**

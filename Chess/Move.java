@@ -66,10 +66,10 @@ public class Move implements Serializable
         return this.toY;
     }
     
-    //public boolean isCapture()
-    //{
-    //    return this.capture;
-    //}
+    public boolean isCapture()
+    {
+        return this.capture;
+    }
     
     //public Move setCapture(boolean c)
     //{

@@ -50,9 +50,11 @@ public class Square implements Serializable
     }
     
     // Is this necessary? Can I just call setPiece with null as an argument?
-    public void removePiece()
+    public Piece removePiece()
     {
+        Piece p = this.currentPiece;
         this.currentPiece = null;
+        return p;
     }
     
     public Square setSelectionStatus(String s)
@@ -79,8 +81,7 @@ public class Square implements Serializable
     
     public String toString()
     {
-        // I'll need to change this to somehow account for possible captures later.
-        if(currentPiece == null || this.selectionStatus.equals("C"))
+        if(currentPiece == null)
         {
             return this.selectionStatus + "  " + this.selectionStatus;
         }

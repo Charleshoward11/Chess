@@ -2,5 +2,11 @@
 comment0.params=
 comment0.target=void\ mainTest()
 comment1.params=
-comment1.target=void\ pawnTest()
-numComments=2
+comment1.target=void\ cloneTest()
+comment2.params=
+comment2.target=void\ pawnTest()
+comment3.params=
+comment3.target=void\ checkTest()
+comment4.params=
+comment4.target=void\ castlingTest()
+numComments=5

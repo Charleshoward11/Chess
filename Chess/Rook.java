@@ -15,6 +15,15 @@ public class Rook extends Piece
         super(color, x, y);
     }
     
+    public Rook clone()
+    {
+        Rook copy = new Rook(this.getColor(), this.getX(), this.getY());
+        
+        copy.setMoved(this.hasMoved());
+        
+        return copy;
+    }
+    
     /**
      * This'll be fun.
      */
