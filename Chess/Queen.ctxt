@@ -1,10 +1,10 @@
 #BlueJ class context
-comment0.params=color\ x\ y
-comment0.target=Queen(java.lang.String,\ int,\ int)
+comment0.params=isWhite\ x\ y
+comment0.target=Queen(boolean,\ int,\ int)
 comment1.params=
 comment1.target=Queen\ clone()
-comment2.params=
-comment2.target=java.util.ArrayList\ getMoves()
+comment2.params=b
+comment2.target=java.util.ArrayList\ getMoves(Board)
 comment2.text=\r\n\ This'll\ be\ fun.\r\n
 comment3.params=
 comment3.target=java.lang.String\ toString()

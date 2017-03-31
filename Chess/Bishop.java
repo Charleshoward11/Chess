@@ -12,14 +12,14 @@ import java.util.*;
  */
 public class Bishop extends Piece
 {
-    public Bishop(String color, int x, int y)
+    public Bishop(boolean isWhite, int x, int y)
     {
-        super(color, x, y);
+        super(isWhite, x, y);
     }
     
     public Bishop clone()
     {
-        Bishop copy = new Bishop(this.getColor(), this.getX(), this.getY());
+        Bishop copy = new Bishop(this.isWhite, this.getX(), this.getY());
         
         copy.setMoved(this.hasMoved());
         
@@ -29,7 +29,7 @@ public class Bishop extends Piece
     /**
      * This'll be fun.
      */
-    public ArrayList<ArrayList<Move>> getMoves()
+    public ArrayList<ArrayList<Move>> getMoves(Board b)
     {
         ArrayList<ArrayList<Move>> moves = new ArrayList<ArrayList<Move>>();
         
@@ -50,7 +50,7 @@ public class Bishop extends Piece
         current = new ArrayList<Move>();
         while((h >= 0) && (v >= 0))
         {
-            current.add(new Move(h1, v1, h, v));
+            current.add(new Move(b, h1, v1, h, v));
             h--;
             v--;
         }
@@ -64,7 +64,7 @@ public class Bishop extends Piece
         current = new ArrayList<Move>();
         while((h <= 7) && (v >= 0))
         {
-            current.add(new Move(h1, v1, h, v));
+            current.add(new Move(b, h1, v1, h, v));
             h++;
             v--;
         }
@@ -78,7 +78,7 @@ public class Bishop extends Piece
         current = new ArrayList<Move>();
         while((h <= 7) && (v <= 7))
         {
-            current.add(new Move(h1, v1, h, v));
+            current.add(new Move(b, h1, v1, h, v));
             h++;
             v++;
         }
@@ -92,7 +92,7 @@ public class Bishop extends Piece
         current = new ArrayList<Move>();
         while((h >= 0) && (v <= 7))
         {
-            current.add(new Move(h1, v1, h, v));
+            current.add(new Move(b, h1, v1, h, v));
             h--;
             v++;
         }
@@ -103,16 +103,14 @@ public class Bishop extends Piece
     
     public String toString()
     {
-        if(getColor().equals("White"))
+        if(isWhite)
         {
             return "\u200A\u2657\u200A";
         }
-        else if(getColor().equals("Black"))
+        else
         {
             return "\u200A\u265D\u200A";
         }
-        
-        return "B";
     }
     
     public boolean isBishop(){return true;}

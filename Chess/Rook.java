@@ -10,14 +10,14 @@ import java.util.*;
  */
 public class Rook extends Piece
 {
-    public Rook(String color, int x, int y)
+    public Rook(boolean isWhite, int x, int y)
     {
-        super(color, x, y);
+        super(isWhite, x, y);
     }
     
     public Rook clone()
     {
-        Rook copy = new Rook(this.getColor(), this.getX(), this.getY());
+        Rook copy = new Rook(this.isWhite, this.getX(), this.getY());
         
         copy.setMoved(this.hasMoved());
         
@@ -27,7 +27,7 @@ public class Rook extends Piece
     /**
      * This'll be fun.
      */
-    public ArrayList<ArrayList<Move>> getMoves()
+    public ArrayList<ArrayList<Move>> getMoves(Board b)
     {
         ArrayList<ArrayList<Move>> moves = new ArrayList<ArrayList<Move>>();
         
@@ -42,11 +42,11 @@ public class Rook extends Piece
         {
             if(h1 == 0)
             {
-                castling.add(new Move(h1, v1, 3, v1));
+                castling.add(new Move(b, h1, v1, 3, v1));
             }
             else if(h1 == 7)
             {
-                castling.add(new Move(h1, v1, 5, v1));
+                castling.add(new Move(b, h1, v1, 5, v1));
             }
         }
         
@@ -61,7 +61,7 @@ public class Rook extends Piece
         ArrayList<Move> current = new ArrayList<Move>();
         while(h >= 0)
         {
-            current.add(new Move(h1, v1, h, v));
+            current.add(new Move(b, h1, v1, h, v));
             h--;
         }
         moves.add(current);
@@ -75,7 +75,7 @@ public class Rook extends Piece
         current = new ArrayList<Move>();
         while(v >= 0)
         {
-            current.add(new Move(h1, v1, h, v));
+            current.add(new Move(b, h1, v1, h, v));
             v--;
         }
         moves.add(current);
@@ -89,7 +89,7 @@ public class Rook extends Piece
         current = new ArrayList<Move>();
         while(h <= 7)
         {
-            current.add(new Move(h1, v1, h, v));
+            current.add(new Move(b, h1, v1, h, v));
             h++;
         }
         moves.add(current);
@@ -103,7 +103,7 @@ public class Rook extends Piece
         current = new ArrayList<Move>();
         while(v <= 7)
         {
-            current.add(new Move(h1, v1, h, v));
+            current.add(new Move(b, h1, v1, h, v));
             v++;
         }
         moves.add(current);
@@ -113,16 +113,14 @@ public class Rook extends Piece
     
     public String toString()
     {
-        if(getColor().equals("White"))
+        if(isWhite)
         {
             return "\u200A\u2656\u200A";
         }
-        else if(getColor().equals("Black"))
+        else
         {
             return "\u200A\u265C\u200A";
         }
-        
-        return "R";
     }
     
     public boolean isRook(){return true;}

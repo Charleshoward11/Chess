@@ -10,14 +10,14 @@ import java.util.*;
  */
 public class Queen extends Piece
 {
-    public Queen(String color, int x, int y)
+    public Queen(boolean isWhite, int x, int y)
     {
-        super(color, x, y);
+        super(isWhite, x, y);
     }
     
     public Queen clone()
     {
-        Queen copy = new Queen(this.getColor(), this.getX(), this.getY());
+        Queen copy = new Queen(this.isWhite, this.getX(), this.getY());
         
         copy.setMoved(this.hasMoved());
         
@@ -27,7 +27,7 @@ public class Queen extends Piece
     /**
      * This'll be fun.
      */
-    public ArrayList<ArrayList<Move>> getMoves()
+    public ArrayList<ArrayList<Move>> getMoves(Board b)
     {
         ArrayList<ArrayList<Move>> moves = new ArrayList<ArrayList<Move>>();
         
@@ -51,7 +51,7 @@ public class Queen extends Piece
         current = new ArrayList<Move>();
         while(h >= 0)
         {
-            current.add(new Move(h1, v1, h, v));
+            current.add(new Move(b, h1, v1, h, v));
             h--;
         }
         moves.add(current);
@@ -64,7 +64,7 @@ public class Queen extends Piece
         current = new ArrayList<Move>();
         while(v >= 0)
         {
-            current.add(new Move(h1, v1, h, v));
+            current.add(new Move(b, h1, v1, h, v));
             v--;
         }
         moves.add(current);
@@ -77,7 +77,7 @@ public class Queen extends Piece
         current = new ArrayList<Move>();
         while(h <= 7)
         {
-            current.add(new Move(h1, v1, h, v));
+            current.add(new Move(b, h1, v1, h, v));
             h++;
         }
         moves.add(current);
@@ -90,7 +90,7 @@ public class Queen extends Piece
         current = new ArrayList<Move>();
         while(v <= 7)
         {
-            current.add(new Move(h1, v1, h, v));
+            current.add(new Move(b, h1, v1, h, v));
             v++;
         }
         moves.add(current);
@@ -104,7 +104,7 @@ public class Queen extends Piece
         current = new ArrayList<Move>();
         while((h >= 0) && (v >= 0))
         {
-            current.add(new Move(h1, v1, h, v));
+            current.add(new Move(b, h1, v1, h, v));
             h--;
             v--;
         }
@@ -118,7 +118,7 @@ public class Queen extends Piece
         current = new ArrayList<Move>();
         while((h <= 7) && (v >= 0))
         {
-            current.add(new Move(h1, v1, h, v));
+            current.add(new Move(b, h1, v1, h, v));
             h++;
             v--;
         }
@@ -132,7 +132,7 @@ public class Queen extends Piece
         current = new ArrayList<Move>();
         while((h <= 7) && (v <= 7))
         {
-            current.add(new Move(h1, v1, h, v));
+            current.add(new Move(b, h1, v1, h, v));
             h++;
             v++;
         }
@@ -146,7 +146,7 @@ public class Queen extends Piece
         current = new ArrayList<Move>();
         while((h >= 0) && (v <= 7))
         {
-            current.add(new Move(h1, v1, h, v));
+            current.add(new Move(b, h1, v1, h, v));
             h--;
             v++;
         }
@@ -157,16 +157,14 @@ public class Queen extends Piece
     
     public String toString()
     {
-        if(getColor().equals("White"))
+        if(isWhite)
         {
             return "\u200A\u2655\u200A";
         }
-        else if(getColor().equals("Black"))
+        else
         {
             return "\u200A\u265B\u200A";
         }
-        
-        return "Q";
     }
     
     public boolean isQueen(){return true;}

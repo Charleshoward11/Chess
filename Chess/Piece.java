@@ -14,7 +14,10 @@ public abstract class Piece implements Cloneable
     private int x, y;
     
     // Take a wild guess what this String stores.
-    private final String color;
+    // private final String color;
+    
+    // I should replace the color string with this, to make things simpler.
+    public final boolean isWhite;
     
     // Tells if the piece has moved, is used in castling and pawn double-moves.
     private boolean moved;
@@ -23,19 +26,19 @@ public abstract class Piece implements Cloneable
     
     // This class should probably also function as the base actor class.
     
-    public Piece(String color, int x, int y)
+    public Piece(boolean isWhite, int x, int y)
     {
         // initialise instance variables
-        this.color = color;
+        this.isWhite = isWhite;
         this.x = x;
         this.y = y;
         this.moved = false;
     }
     
-    public String getColor()
-    {
-        return this.color;
-    }
+    //public String getColor()
+    //{
+    //    return this.color;
+    //}
     
     public Piece setX(int x)
     {
@@ -90,7 +93,7 @@ public abstract class Piece implements Cloneable
      * I might make this return a multidimensional arraylist, 
      * with each dimension representing a line of moves for a "runner"-type piece.
      */
-    public abstract ArrayList<ArrayList<Move>> getMoves();
+    public abstract ArrayList<ArrayList<Move>> getMoves(Board b);
     
     /**
      * I found the unicode characters for chess pieces, but they were all 1+1/2 spaces wide,

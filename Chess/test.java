@@ -29,21 +29,21 @@ public class test
     {
         Board b = new Board();
         
-        b.placePiece(new Pawn("White", 4,6));
+        b.placePiece(new Pawn(true, 4,6));
         
-        b.placePiece(new Pawn("Black", 5,5));
+        b.placePiece(new Pawn(false, 5,5));
         
-        b.placePiece(new Pawn("Black", 3,3));
+        b.placePiece(new Pawn(false, 3,3));
         
         ValidMoveList ml = b.getValidMoves(4,6);
         
         for(Move m : ml.getMoves())
         {
-            b.getSquare(m.getToX(), m.getToY()).setSelectionStatus("M");
+            m.getTo().setSelectionStatus("M");
         }
         for(Move m : ml.getCaptures())
         {
-            b.getSquare(m.getToX(), m.getToY()).setSelectionStatus("C");
+            m.getTo().setSelectionStatus("C");
         }
         
         b.printBoard();
@@ -56,11 +56,11 @@ public class test
         
         for(Move m : ml.getMoves())
         {
-            b.getSquare(m.getToX(), m.getToY()).setSelectionStatus("M");
+            m.getTo().setSelectionStatus("M");
         }
         for(Move m : ml.getCaptures())
         {
-            b.getSquare(m.getToX(), m.getToY()).setSelectionStatus("C");
+            m.getTo().setSelectionStatus("C");
         }
         
         b.printBoard();
@@ -70,23 +70,25 @@ public class test
     {
         Board b = new Board();
         
-        b.placePiece(new King("White", 4,4));
+        King k = new King(true, 4,4);
         
-        b.placePiece(new Queen("Black", 2,4));
+        b.placePiece(k);
         
-        b.placePiece(new Pawn("White", 3,4));
+        b.placePiece(new Queen(false, 2,4));
         
-        b.placePiece(new Rook("Black", 0,5));
+        b.placePiece(new Pawn(true, 3,4));
+        
+        b.placePiece(new Rook(false, 0,5));
         
         b.printBoard();
         
-        b.isInCheck("White");
+        b.isInCheck(k);
         
         b.movePiece(4,4, 4,5);
         
         b.printBoard();
         
-        b.isInCheck("White");
+        b.isInCheck(k);
         
     }
     
@@ -94,11 +96,11 @@ public class test
     {
         Board b = new Board();
         
-        King king = new King("White", 4,7);
+        King king = new King(true, 4,7);
         
-        Rook rook1 = new Rook("White", 0,7);
+        Rook rook1 = new Rook(true, 0,7);
         
-        Rook rook2 = new Rook("White", 7,7);
+        Rook rook2 = new Rook(true, 7,7);
         
         b.placePiece(king);
         
@@ -125,7 +127,7 @@ public class test
         }
         System.out.println();
         
-        Bishop bishop1 = new Bishop("White", 2,7);
+        Bishop bishop1 = new Bishop(true, 2,7);
         b.placePiece(bishop1);
         b.printBoard();
         System.out.println("bishop1 is now on [" + bishop1.getX() + "][" + bishop1.getY() + "]");
@@ -147,7 +149,7 @@ public class test
         }
         System.out.println();
         
-        Bishop bishop2 = new Bishop("White", 5,7);
+        Bishop bishop2 = new Bishop(true, 5,7);
         b.placePiece(bishop2);
         b.printBoard();
         System.out.println("bishop2 is now on [" + bishop2.getX() + "][" + bishop2.getY() + "]");

@@ -12,14 +12,14 @@ public class King extends Piece
 {
     public boolean check;
     
-    public King(String color, int x, int y)
+    public King(boolean isWhite, int x, int y)
     {
-        super(color, x, y);
+        super(isWhite, x, y);
     }
     
     public Piece clone()
     {
-        King copy = new King(this.getColor(), this.getX(), this.getY());
+        King copy = new King(this.isWhite, this.getX(), this.getY());
         
         copy.setMoved(this.hasMoved());
         
@@ -29,7 +29,7 @@ public class King extends Piece
     /**
      * Castling is going to be tricky.
      */
-    public ArrayList<ArrayList<Move>> getMoves()
+    public ArrayList<ArrayList<Move>> getMoves(Board b)
     {
         ArrayList<ArrayList<Move>> m = new ArrayList<ArrayList<Move>>();
         
@@ -38,8 +38,8 @@ public class King extends Piece
         if(!hasMoved())
         {
             ArrayList<Move> castling = new ArrayList<Move>();
-            castling.add(new Move(4, getY(), 6, getY()));
-            castling.add(new Move(4, getY(), 2, getY()));
+            castling.add(new Move(b, this, b.getSquare(6, getY())));
+            castling.add(new Move(b, this, b.getSquare(2, getY())));
             m.add(castling);
         }
         
@@ -53,14 +53,14 @@ public class King extends Piece
          */
         if(getX() > 0)
         {
-            moves.add(new Move(getX(), getY(), getX() - 1, getY()));
+            moves.add(new Move(b, this, b.getSquare(getX() - 1, getY())));
             if(getY() > 0)
             {
-                moves.add(new Move(getX(), getY(), getX() - 1, getY() - 1));
+                moves.add(new Move(b, this, b.getSquare(getX() - 1, getY() - 1)));
             }
             if(getY() < 7)
             {
-                moves.add(new Move(getX(), getY(), getX() - 1, getY() + 1));
+                moves.add(new Move(b, this, b.getSquare(getX() - 1, getY() + 1)));
             }
         }
         
@@ -71,14 +71,14 @@ public class King extends Piece
          */
         if(getX() < 7)
         {
-            moves.add(new Move(getX(), getY(), getX() + 1, getY()));
+            moves.add(new Move(b, this, b.getSquare(getX() + 1, getY())));
             if(getY() > 0)
             {
-                moves.add(new Move(getX(), getY(), getX() + 1, getY() - 1));
+                moves.add(new Move(b, this, b.getSquare(getX() + 1, getY() - 1)));
             }
             if(getY() < 7)
             {
-                moves.add(new Move(getX(), getY(), getX() + 1, getY() + 1));
+                moves.add(new Move(b, this, b.getSquare(getX() + 1, getY() + 1)));
             }
         }
         
@@ -89,14 +89,12 @@ public class King extends Piece
          */
         if(getY() > 0)
         {
-            moves.add(new Move(getX(), getY(), getX(), getY() - 1));
+            moves.add(new Move(b, this, b.getSquare(getX(), getY() - 1)));
         }
         if(getY() > 0)
         {
-            moves.add(new Move(getX(), getY(), getX(), getY() - 1));
+            moves.add(new Move(b, this, b.getSquare(getX(), getY() - 1)));
         }
-        
-        
         
         return m;
     }
@@ -115,15 +113,14 @@ public class King extends Piece
     
     public String toString()
     {
-        if(getColor().equals("White"))
+        if(isWhite)
         {
             return "\u200A\u2654\u200A";
         }
-        else if(getColor().equals("Black"))
+        else
         {
             return "\u200A\u265A\u200A";
         }
-        return "K";
     }
     
     public boolean isKing()

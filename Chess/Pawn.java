@@ -10,14 +10,14 @@ import java.util.*;
  */
 public class Pawn extends Piece
 {
-    public Pawn(String color, int x, int y)
+    public Pawn(boolean isWhite, int x, int y)
     {
-        super(color, x, y);
+        super(isWhite, x, y);
     }
     
     public Pawn clone()
     {
-        Pawn copy = new Pawn(this.getColor(), this.getX(), this.getY());
+        Pawn copy = new Pawn(this.isWhite, this.getX(), this.getY());
         
         copy.setMoved(this.hasMoved());
         
@@ -26,7 +26,7 @@ public class Pawn extends Piece
     
     // I should have a special rule/graphic associated with en passant. 
     // If there's an opportunity for an en passant capture, fancy-looking text should appear above it.
-    public ArrayList<ArrayList<Move>> getMoves()
+    public ArrayList<ArrayList<Move>> getMoves(Board b)
     {
         ArrayList<ArrayList<Move>> m = new ArrayList<ArrayList<Move>>();
         
@@ -34,11 +34,11 @@ public class Pawn extends Piece
         // A modifier variable, used to simplify determining which direction the pawn will move in.
         int mod = 0;
         
-        if(getColor().equals("White"))
+        if(isWhite)
         {
             mod = -1;
         }
-        else if(getColor().equals("Black"))
+        else
         {
             mod = 1;
         }
@@ -46,11 +46,11 @@ public class Pawn extends Piece
         ArrayList<Move> forward = new ArrayList<Move>();
         
         // ArrayList for the pawn moving forward.
-        forward.add(new Move(getX(), getY(), getX(), getY() + mod));
+        forward.add(new Move(b, this, getX(), getY() + mod));
         // Adding the initial double move
         if(!hasMoved())
         {
-            forward.add(new Move(getX(), getY(), getX(), getY() + (2 * mod)));
+            forward.add(new Move(b, this, getX(), getY() + (2 * mod)));
         }
         m.add(forward);
         
@@ -58,11 +58,11 @@ public class Pawn extends Piece
         ArrayList<Move> captures = new ArrayList<Move>();
         if(getX() < 7)
         {
-            captures.add(new Move(getX(), getY(), getX() + 1, getY() + mod));
+            captures.add(new Move(b, this, getX() + 1, getY() + mod));
         }
         if(getX() > 0)
         {
-            captures.add(new Move(getX(), getY(), getX() - 1, getY() + mod));
+            captures.add(new Move(b, this, getX() - 1, getY() + mod));
         }
         m.add(captures);
         
@@ -71,16 +71,14 @@ public class Pawn extends Piece
     
     public String toString()
     {
-        if(getColor().equals("White"))
+        if(isWhite)
         {
             return "\u200A\u2659\u200A";
         }
-        else if(getColor().equals("Black"))
+        else
         {
             return "\u200A\u265F\u200A";
         }
-        
-        return "P";
     }
     
     public boolean isPawn(){return true;}

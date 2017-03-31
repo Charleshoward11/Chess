@@ -10,14 +10,14 @@ import java.util.*;
  */
 public class Knight extends Piece
 {
-    public Knight(String color, int x, int y)
+    public Knight(boolean isWhite, int x, int y)
     {
-        super(color, x, y);
+        super(isWhite, x, y);
     }
     
     public Knight clone()
     {
-        Knight copy = new Knight(this.getColor(), this.getX(), this.getY());
+        Knight copy = new Knight(this.isWhite, this.getX(), this.getY());
         
         copy.setMoved(this.hasMoved());
         
@@ -27,7 +27,7 @@ public class Knight extends Piece
     /**
      * This'll be fun.
      */
-    public ArrayList<ArrayList<Move>> getMoves()
+    public ArrayList<ArrayList<Move>> getMoves(Board b)
     {
         ArrayList<ArrayList<Move>> m = new ArrayList<ArrayList<Move>>();
         ArrayList<Move> moves = new ArrayList<Move>();
@@ -46,11 +46,11 @@ public class Knight extends Piece
         {
             if(y1 > 0)
             {
-                moves.add(new Move(x1, y1, x1 - 2, y1 - 1));
+                moves.add(new Move(b, this, x1 - 2, y1 - 1));
             }
             if(y1 < 7)
             {
-                moves.add(new Move(x1, y1, x1 - 2, y1 + 1));
+                moves.add(new Move(b, this, x1 - 2, y1 + 1));
             }
         }
         
@@ -63,11 +63,11 @@ public class Knight extends Piece
         {
             if(x1 > 0)
             {
-                moves.add(new Move(x1, y1, x1 - 1, y1 - 2));
+                moves.add(new Move(b, this, x1 - 1, y1 - 2));
             }
             if(x1 < 7)
             {
-                moves.add(new Move(x1, y1, x1 + 1, y1 - 2));
+                moves.add(new Move(b, this, x1 + 1, y1 - 2));
             }
         }
         
@@ -80,11 +80,11 @@ public class Knight extends Piece
         {
             if(y1 > 0)
             {
-                moves.add(new Move(x1, y1, x1 + 2, y1 - 1));
+                moves.add(new Move(b, this, x1 + 2, y1 - 1));
             }
             if(y1 < 7)
             {
-                moves.add(new Move(x1, y1, x1 + 2, y1 + 1));
+                moves.add(new Move(b, this, x1 + 2, y1 + 1));
             }
         }
         
@@ -97,11 +97,11 @@ public class Knight extends Piece
         {
             if(x1 > 0)
             {
-                moves.add(new Move(x1, y1, x1 - 1, y1 + 2));
+                moves.add(new Move(b, this, x1 - 1, y1 + 2));
             }
             if(x1 < 7)
             {
-                moves.add(new Move(x1, y1, x1 + 1, y1 + 2));
+                moves.add(new Move(b, this, x1 + 1, y1 + 2));
             }
         }
         
@@ -110,16 +110,14 @@ public class Knight extends Piece
     
     public String toString()
     {
-        if(getColor().equals("White"))
+        if(isWhite)
         {
             return "\u200A\u2658\u200A";
         }
-        else if(getColor().equals("Black"))
+        else
         {
             return "\u200A\u265E\u200A";
         }
-        
-        return "N";
     }
     
     public boolean isKnight(){return true;}
