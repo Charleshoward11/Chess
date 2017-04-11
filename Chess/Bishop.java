@@ -2,6 +2,9 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import com.badlogic.gdx.*;
+import com.badlogic.gdx.scenes.scene2d.*;
+
 /**
  * You probably know how a bishop works in chess. 
  * I basically just copied over the code for the queen

@@ -1,0 +1,5 @@
+#BlueJ class context
+comment0.params=
+comment0.target=void\ create()
+comment0.text=\r\n\ \ Called\ when\ game\ is\ initialized;\ \r\n\ \ should\ initialize\ assets\ stored\ by\ Skin\ object\ \r\n\ \ or\ required\ by\ multiple\ screens.\r\n
+numComments=1

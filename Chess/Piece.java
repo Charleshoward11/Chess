@@ -2,6 +2,9 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import com.badlogic.gdx.*;
+import com.badlogic.gdx.scenes.scene2d.*;
+
 /**
  * Abstract class that is the base for all the other pieces.
  * 
@@ -10,17 +13,22 @@ import java.util.*;
  */
 public abstract class Piece implements Cloneable
 {
-    // Integers that store the piece's position on the board.
+    /**
+     * Integers that store the piece's position on the board.
+     */
     private int x, y;
     
-    // Take a wild guess what this String stores.
-    // private final String color;
-    
-    // I should replace the color string with this, to make things simpler.
+    /**
+     * I replaced the color string with this, to make things simpler.
+     */
     public final boolean isWhite;
     
-    // Tells if the piece has moved, is used in castling and pawn double-moves.
+    /**
+     * Tells if the piece has moved, is used in castling and pawn double-moves.
+     */
     private boolean moved;
+    
+    private PieceActor actor;
     
     // Maybe there should be a variable for the piece's point value. Can you overload variables?
     
@@ -28,17 +36,11 @@ public abstract class Piece implements Cloneable
     
     public Piece(boolean isWhite, int x, int y)
     {
-        // initialise instance variables
         this.isWhite = isWhite;
         this.x = x;
         this.y = y;
         this.moved = false;
     }
-    
-    //public String getColor()
-    //{
-    //    return this.color;
-    //}
     
     public Piece setX(int x)
     {
@@ -78,6 +80,17 @@ public abstract class Piece implements Cloneable
     public boolean hasMoved()
     {
         return this.moved;
+    }
+    
+    public Piece setActor(PieceActor a)
+    {
+        this.actor = a;
+        return this;
+    }
+    
+    public PieceActor getActor()
+    {
+        return this.actor;
     }
     
     public Piece clone()

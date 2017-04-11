@@ -7,6 +7,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 
+import com.badlogic.gdx.*;
+import com.badlogic.gdx.scenes.scene2d.*;
+
 /**
  * Write a description of class Board here.
  * 
@@ -23,6 +26,8 @@ public class Board implements Serializable, Cloneable
     
     // If I'm going to have en passant capabilities, 
     // there should probably be a variable here that stores a pawn that just double moved
+    
+    
     
     /**
      * Constructor for objects of class Board
@@ -42,8 +47,8 @@ public class Board implements Serializable, Cloneable
     {
         Board copy = new Board();
         
-        this.whitePieces = new ArrayList<Piece>();
-        this.blackPieces = new ArrayList<Piece>();
+        copy.whitePieces = new ArrayList<Piece>();
+        copy.blackPieces = new ArrayList<Piece>();
         
         for(int y = 0; y < 8; y++)
         {
@@ -296,7 +301,7 @@ public class Board implements Serializable, Cloneable
         
         Piece p = m.getFrom().removePiece();
         
-        p.setX(m.getTo().getX()).setY(m.getTo().getY());
+        p.setX(m.getTo().y).setY(m.getTo().y);
         
         return placePiece(p);
     }
@@ -378,7 +383,7 @@ public class Board implements Serializable, Cloneable
                         
                         for(Move c : ml.getCaptures())
                         {
-                            if(c.getTo().getX() == k.getX() && c.getTo().getY() == k.getY())
+                            if(c.getTo().x == k.getX() && c.getTo().y == k.getY())
                             {
                                 System.out.println("Check");
                                 
@@ -436,6 +441,16 @@ public class Board implements Serializable, Cloneable
         
         // If none of those were true
         return true;
+    }
+    
+    public ArrayList<Piece> getWhitePieces()
+    {
+        return this.whitePieces;
+    }
+    
+    public ArrayList<Piece> getBlackPieces()
+    {
+        return this.blackPieces;
     }
     
     //public boolean isThreatenedBy()

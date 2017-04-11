@@ -82,6 +82,6 @@ public class Move implements Serializable
     
     public String toString()
     {
-       return "from " + this.from.getX() + "," + this.from.getY() + " to " +  this.to.getX() + "," + this.to.getY();
+       return "from " + this.from.x + "," + this.from.y + " to " +  this.to.x + "," + this.to.y;
     }
 }

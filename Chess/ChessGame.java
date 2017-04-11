@@ -1,9 +1,16 @@
-import java.util.Scanner; 
-
-// Import LibGDX stuff?
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
+import com.badlogic.gdx.graphics.Texture;
 
 /**
- * Write a description of class ChessGame here.
+ * This should be the class that handles the game's basic functions.
  * 
  * @author (your name) 
  * @version (a version number or a date)

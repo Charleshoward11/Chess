@@ -16,8 +16,10 @@ public class Square implements Serializable
     // Possibilities are " ", "current selection", "possible move", "possible capture"
     private String selectionStatus;
     
-    private final int x;
-    private final int y;
+    public final int x;
+    public final int y;
+    
+    private SquareActor actor;
     
     public Square(int x, int y)
     {
@@ -69,14 +71,15 @@ public class Square implements Serializable
         return this.selectionStatus;
     }
     
-    public int getX()
+    public Square setActor(SquareActor a)
     {
-        return this.x;
+        this.actor = a;
+        return this;
     }
     
-    public int getY()
+    public SquareActor getActor()
     {
-        return this.y;
+        return this.actor;
     }
     
     public String toString()

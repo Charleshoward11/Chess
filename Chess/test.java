@@ -16,7 +16,23 @@ public class test
         
         b.resetBoard();
         
-        b.printBoard();
+        //b.printBoard();
+        
+        for(Piece p : b.getWhitePieces())
+        {
+            System.out.println("" + p + " @ " + p.getX() + "," + p.getY());
+        }
+        
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        
+        b.getWhitePieces().remove(b.getPiece(2,6));
+        
+        for(Piece p : b.getWhitePieces())
+        {
+            System.out.println("" + p + " @ " + p.getX() + "," + p.getY());
+        }
     }
     
     public static void cloneTest()
