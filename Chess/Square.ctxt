@@ -1,20 +1,23 @@
 #BlueJ class context
-comment0.params=x\ y
-comment0.target=Square(int,\ int)
+comment0.params=x\ y\ b
+comment0.target=Square(int,\ int,\ Board)
 comment1.params=p
 comment1.target=Square\ setPiece(Piece)
+comment1.text=\r\n\ Sets\ this\ square's\ occupant\ to\ a\ specified\ piece,\r\n\ and\ sets\ that\ piece's\ current\ square\ to\ this\ one.\r\n\ \r\n\ No\ longer\ causes\ an\ infinite\ loop\!\r\n
 comment2.params=
 comment2.target=Piece\ getPiece()
 comment3.params=
 comment3.target=boolean\ hasPiece()
 comment4.params=
 comment4.target=Piece\ removePiece()
+comment4.text=\r\n\ Is\ this\ necessary?\ Can\ I\ just\ call\ setPiece\ with\ null\ as\ an\ argument?\r\n\ Probably\ not\ at\ this\ point.\r\n
 comment5.params=s
 comment5.target=Square\ setSelectionStatus(java.lang.String)
 comment6.params=
 comment6.target=java.lang.String\ getSelectionStatus()
 comment7.params=a
 comment7.target=Square\ setActor(SquareActor)
+comment7.text=\r\n\ If\ the\ Square\ already\ has\ an\ actor,\ this\ method\ does\ nothing.\r\n\ \r\n\ It\ should\ probably\ throw\ an\ exception,\ though.\r\n
 comment8.params=
 comment8.target=SquareActor\ getActor()
 comment9.params=

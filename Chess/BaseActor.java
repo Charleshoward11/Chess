@@ -24,8 +24,8 @@ public class BaseActor extends Group
     /**
      *  Animation-related data.
      */
-    private Animation<TextureRegion> animation;
-    private float elapsedTime;
+    protected Animation<TextureRegion> animation;
+    protected float elapsedTime;
     private boolean animationPause;
     
     /** 

@@ -16,22 +16,33 @@ public class Square implements Serializable
     // Possibilities are " ", "current selection", "possible move", "possible capture"
     private String selectionStatus;
     
+    public final Board b;
     public final int x;
     public final int y;
     
     private SquareActor actor;
     
-    public Square(int x, int y)
+    public Square(int x, int y, Board b)
     {
         this.selectionStatus = " ";
         this.currentPiece= null;
         this.x = x;
         this.y = y;
+        this.b = b;
     }
     
+    /**
+     * Sets this square's occupant to a specified piece,
+     * and sets that piece's current square to this one.
+     * 
+     * No longer causes an infinite loop!
+     */
     public Square setPiece(Piece p)
     {
         this.currentPiece = p;
+        
+        if(p.getSquare() != this)
+            p.setSquare(this);
         
         return this;
     }
@@ -51,7 +62,10 @@ public class Square implements Serializable
         return true;
     }
     
-    // Is this necessary? Can I just call setPiece with null as an argument?
+    /**
+     * Is this necessary? Can I just call setPiece with null as an argument?
+     * Probably not at this point.
+     */
     public Piece removePiece()
     {
         Piece p = this.currentPiece;
@@ -71,9 +85,16 @@ public class Square implements Serializable
         return this.selectionStatus;
     }
     
+    /**
+     * If the Square already has an actor, this method does nothing.
+     * 
+     * It should probably throw an exception, though.
+     */
     public Square setActor(SquareActor a)
     {
-        this.actor = a;
+        if(this.actor == null)
+            this.actor = a;
+        
         return this;
     }
     

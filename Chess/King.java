@@ -33,8 +33,7 @@ public class King extends Piece
     {
         ArrayList<ArrayList<Move>> m = new ArrayList<ArrayList<Move>>();
         
-        
-        // Castling. This was surprisingly simple.
+        // Castling.
         if(!hasMoved())
         {
             ArrayList<Move> castling = new ArrayList<Move>();
@@ -91,7 +90,7 @@ public class King extends Piece
         {
             moves.add(new Move(b, this, b.getSquare(getX(), getY() - 1)));
         }
-        if(getY() > 0)
+        if(getY() < 7)
         {
             moves.add(new Move(b, this, b.getSquare(getX(), getY() - 1)));
         }

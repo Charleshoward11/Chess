@@ -3,6 +3,8 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -87,7 +89,7 @@ public class DragAndDropActor extends BaseActor
         return dropTarget;
     }
     
-    public DragAndDropActor(float x, float y, Stage s)
+    public DragAndDropActor(float x, float y, Stage s, Board board)
     {
         super(x,y,s);
         
@@ -121,6 +123,25 @@ public class DragAndDropActor extends BaseActor
                     
                     self.toFront();
                     
+                    // Highlighting possible moves
+                    if(self instanceof PieceActor)
+                    {
+                        PieceActor pi = (PieceActor)self;
+                        
+                        for(Move m : board.getValidMoves(pi.piece).getMoves())
+                        {
+                            m.to.getActor().setMove();
+                        }
+                        
+                        for(Move m : board.getValidMoves(pi.piece).getCaptures())
+                        {
+                            m.to.getActor().setCapture();
+                        }
+                    }
+                    
+                    // This doesn't work, not sure why.
+                    self.addAction(Actions.scaleTo(1.25f, 1.25f, 0.25f));
+                    
                     return true; // returning true indicates other touch methods are called
                 }
                 
@@ -129,6 +150,8 @@ public class DragAndDropActor extends BaseActor
                 {
                     float deltaX = eventOffsetX - self.grabOffsetX;
                     float deltaY = eventOffsetY - self.grabOffsetY;
+                    
+                    // Maybe something to highlight whatever square it's over?
                     
                     self.moveBy(deltaX, deltaY);
                 }
@@ -141,23 +164,69 @@ public class DragAndDropActor extends BaseActor
                     // if self is dropped on a multiple targets, select target "on top"
                     DragAndDropActor target = null;
                     
+                    // keep track of distance to closest object
+                    Float minimumDistance = null;
+                    
+                    // The table containing the SquareActors representing the squares on the board.
+                    Table boardTable = null;
+                    
+                    // Finds the table. Generally only iterates once.
                     for(Actor otherA : self.getStage().getActors())
                     {
-                        if(!(otherA instanceof DragAndDropActor))
-                            continue;
-                        
-                        DragAndDropActor other = (DragAndDropActor)otherA;
-                        
-                        if(!self.equals(other) && other.isTargetable() && self.overlaps(other))
+                        if(otherA instanceof Table)
                         {
-                            if(target == null)
-                                target = other;
-                            else if(other.getZIndex() > target.getZIndex())
-                                target = other;
+                            boardTable = (Table)otherA;
+                            break;
                         }
                     }
                     
-                    self.setDropTarget(target);
+                    for(Actor otherB : boardTable.getChildren())
+                    {
+                        if(!(otherB instanceof DragAndDropActor))
+                            continue;
+                
+                        DragAndDropActor other = (DragAndDropActor)otherB;
+                        float currentDistance = 
+                            Vector2.dst(self.getX(),self.getY(), other.getX(),other.getY());
+                    
+                        if(!self.equals(other) && other.isTargetable() && self.overlaps(other))
+                        {
+                            // first object is default closest
+                            if(target == null || currentDistance < minimumDistance)
+                            {
+                                target = other;
+                                minimumDistance = currentDistance;
+                            }
+                        }
+                    }
+                    
+                    SquareActor tar = (SquareActor)target;
+                    
+                    if(tar.isMove() || tar.isCapture())
+                    {
+                        self.setDropTarget(target);
+                        PieceActor p = (PieceActor)self;
+                        
+                        if(tar.isCapture())
+                        {
+                            tar.square.getPiece().getActor().addAction(Actions.removeActor());
+                        }
+                        
+                        board.movePiece(p.piece, tar.square);
+                        
+                        
+                    }
+                    
+                    // This doesn't work. Not sure why.
+                    self.addAction(Actions.scaleTo(1.00f, 1.00f, 0.25f));
+                    
+                    // Unhighlighting all the SquareActors. 
+                    // Maybe this could go in the for loop above.
+                    for(Actor otherB : boardTable.getChildren())
+                    {
+                        SquareActor s = (SquareActor)otherB;
+                        s.setBlank();
+                    }
                     
                     // for debugging:
                     // System.out.println(self + " dropped on " + target);

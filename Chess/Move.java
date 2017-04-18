@@ -15,14 +15,21 @@ public class Move implements Serializable
     //private final int toY;
     
     // Maybe the object should be inherently based around two references to squares
-    private final Square from;
-    private final Square to;
+    public final Square from;
+    public final Square to;
     
     // Maybe there should be a variable saying which piece is doing the move.
     
     // If the move is a capture. I'm not actually sure if this is necessary, 
     // because they're sorted when put into the ValidMoveList class.
     private boolean capture;
+    
+    public Move(Square from, Square to)
+    {
+        this.from = from;
+        this.to = to;
+        //this.capture = !(from.getPiece().isWhite == to.getPiece().isWhite);
+    }
     
     public Move(Square from, Square to, boolean capture)
     {

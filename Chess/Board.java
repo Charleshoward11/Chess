@@ -38,7 +38,7 @@ public class Board implements Serializable, Cloneable
         {
             for(int x = 0; x < 8; x++)
             {
-                board[x][y] = new Square(x,y);
+                board[x][y] = new Square(x,y, this);
             }
         }
     }
@@ -57,6 +57,8 @@ public class Board implements Serializable, Cloneable
                 if(this.getPiece(x,y) != null)
                 {
                     copy.getSquare(x,y).setPiece(this.getPiece(x,y).clone());
+                    
+                    // Add the piece to the ArrayList?
                 }
             }
         }
@@ -186,7 +188,7 @@ public class Board implements Serializable, Cloneable
                 else
                 {
                     // Why is this adding it as a capture? Is that a mistake?
-                    processedMoves.addCapture(m);
+                    processedMoves.addMove(m);
                 }
             }
         }
@@ -210,7 +212,7 @@ public class Board implements Serializable, Cloneable
                 }
             }
             
-            // Still need the captures
+            // Still need the captures?
             for(Move mm : moves.get(1))
             {
                 Square s = mm.getTo();
@@ -255,6 +257,8 @@ public class Board implements Serializable, Cloneable
      * 
      * Returns true if successful, false if not (e.g. if the requested square is occupied).
      * Maybe this should throw an exception or something.
+     * 
+     * (Somewhat deprecated)
      */
     public boolean placePiece(Piece p)
     {
@@ -287,29 +291,57 @@ public class Board implements Serializable, Cloneable
     public boolean movePiece(Move m)
     //throws Exception
     {
-        // Might be able to remove these two, as the class logically shouldn't be able to call this method with bad coordinates.
+        // Might be able to remove these two, as the program logically shouldn't be able to call this method with bad coordinates.
         if(m.getFrom().getPiece() == null)
         {
             return false;
         }
         
-        // If there's a piece on the TO space that's the same color IE trying to take your own piece.
-        if(m.getTo().getPiece() != null && m.getTo().getPiece().isWhite == m.getFrom().getPiece().isWhite)
+        // If there's a piece on the TO space that's the same color, I.E. trying to take your own piece.
+        Piece f = m.getFrom().getPiece();
+        Piece t = m.getTo().getPiece();
+        
+        if(t != null)
         {
-            return false;
+            if(t.isWhite == f.isWhite)
+                return false;
+            else
+            {
+                // Deal with the capturing of the piece here.
+                // Make sure to remove the piece from its ArrayList.
+                if(t.isWhite)
+                {
+                    whitePieces.remove(t);
+                }
+                else
+                {
+                    blackPieces.remove(t);
+                }
+            }
         }
         
         Piece p = m.getFrom().removePiece();
         
-        p.setX(m.getTo().y).setY(m.getTo().y);
+        p.setSquare(m.getTo());
         
-        return placePiece(p);
+        //return placePiece(p);
+        return true;
     }
     
     public boolean movePiece(int fX, int fY, int tX, int tY)
     //throws Exception
     {
         return movePiece(new Move(this, fX,fY, tX,tY));
+    }
+    
+    public boolean movePiece(Square from, Square to)
+    {
+        return movePiece(new Move(from, to));
+    }
+    
+    public boolean movePiece(Piece p, Square target)
+    {
+        return movePiece(p.getSquare(), target);
     }
     
     /**
@@ -337,6 +369,7 @@ public class Board implements Serializable, Cloneable
         for(Piece p : blackPieces)
         {
             placePiece(p);
+            p.setMoved(false);
         }
         
         // White pieces
@@ -355,6 +388,7 @@ public class Board implements Serializable, Cloneable
         for(Piece p : whitePieces)
         {
             placePiece(p);
+            p.setMoved(false);
         }
         
         return this;
@@ -369,6 +403,7 @@ public class Board implements Serializable, Cloneable
      */
     public boolean isInCheck(King k)
     {
+        // Change this to use the ArrayLists containing the pieces themselves.
         for(Square[] ss : board)
         {
             for(Square s : ss)
@@ -411,7 +446,7 @@ public class Board implements Serializable, Cloneable
             return false;
         }
         
-        // If other pieces are in the way
+        // If other pieces are in the way. Not working.
         int i;
         for(i = k.getX() - 1; i > r.getX(); i--)
         {

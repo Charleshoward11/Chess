@@ -14,9 +14,14 @@ import com.badlogic.gdx.scenes.scene2d.*;
 public abstract class Piece implements Cloneable
 {
     /**
-     * Integers that store the piece's position on the board.
+     * (Deprecated) Integers that store the piece's position on the board.
      */
     private int x, y;
+    
+    /**
+     * Square that stores the piece's position on the board.
+     */
+    private Square currentSquare;
     
     /**
      * I replaced the color string with this, to make things simpler.
@@ -28,6 +33,9 @@ public abstract class Piece implements Cloneable
      */
     private boolean moved;
     
+    /**
+     * I wish I could make this a public final, but I don't think I can.
+     */
     private PieceActor actor;
     
     // Maybe there should be a variable for the piece's point value. Can you overload variables?
@@ -40,6 +48,35 @@ public abstract class Piece implements Cloneable
         this.x = x;
         this.y = y;
         this.moved = false;
+    }
+    
+    /**
+     * Sets this piece's position to a specified square,
+     * and sets that square's current piece to this one.
+     * 
+     * Also updates the deprecated x and y values.
+     * 
+     * No longer causes an infinite loop!
+     */
+    public Piece setSquare(Square target)
+    {
+        this.currentSquare = target;
+        if(target.getPiece() != this)
+            target.setPiece(this);
+        this.x = currentSquare.x;
+        this.y = currentSquare.y;
+        this.moved = true;
+        return this;
+    }
+    
+    public Square getSquare()
+    {
+        return this.currentSquare;
+    }
+    
+    public Board getBoard()
+    {
+        return this.currentSquare.b;
     }
     
     public Piece setX(int x)
@@ -82,9 +119,16 @@ public abstract class Piece implements Cloneable
         return this.moved;
     }
     
+    /**
+     * If the piece already has an actor, this method does nothing.
+     * 
+     * It should probably throw an exception, though.
+     */
     public Piece setActor(PieceActor a)
     {
-        this.actor = a;
+        if(this.actor == null)
+            this.actor = a;
+        
         return this;
     }
     

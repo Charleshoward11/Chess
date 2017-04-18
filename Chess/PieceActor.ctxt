@@ -1,6 +1,8 @@
 #BlueJ class context
 comment0.params=p\ s
 comment0.target=PieceActor(Piece,\ com.badlogic.gdx.scenes.scene2d.Stage)
-comment1.params=dt
-comment1.target=void\ act(float)
-numComments=2
+comment1.params=batch\ parentAlpha
+comment1.target=void\ draw(com.badlogic.gdx.graphics.g2d.Batch,\ float)
+comment2.params=dt
+comment2.target=void\ act(float)
+numComments=3

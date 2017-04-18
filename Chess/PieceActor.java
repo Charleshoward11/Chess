@@ -1,4 +1,12 @@
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.*;
+import com.badlogic.gdx.scenes.scene2d.*;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.Texture.*;
+import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.math.Intersector.*;
+import com.badlogic.gdx.utils.*;
+import com.badlogic.gdx.utils.viewport.*;
 
 /**
  * A wrapper (I think that's the correct term) for the Piece class, 
@@ -13,7 +21,7 @@ public class PieceActor extends DragAndDropActor
     
     public PieceActor(Piece p, Stage s)
     {
-        super(0,0, s);
+        super(0,0, s, p.getBoard());
         
         piece = p.setActor(this);
         
@@ -49,9 +57,42 @@ public class PieceActor extends DragAndDropActor
         }
         
         setDraggable(true);
-        setTargetable(false);
+        setTargetable(true);
         
         s.addActor(this);
+        
+        
+    }
+    
+    public void draw(Batch batch, float parentAlpha) 
+    {
+
+        // create a drop shadow effect:
+        //   set tint color to translucent black
+        batch.setColor(0,0,0, 0.5f);
+
+        // ranges from 1.00 to 1.25
+        float scale = this.getScaleX();
+        
+        // ranges from 0 to 1
+        float percent = 4 * scale - 4;
+        
+        batch.draw( animation.getKeyFrame(elapsedTime), 
+            getX() + 10 * percent, getY() - 10 * percent, getOriginX(), getOriginY(),
+            getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation() );
+
+        super.draw( batch, parentAlpha );
+
+        /*
+        Color c = getColor(); // used to apply tint color effect
+
+        batch.setColor(c.r, c.g, c.b, c.a);
+
+        if ( animation != null && isVisible() )
+        batch.draw( animation.getKeyFrame(elapsedTime), 
+        getX(), getY(), getOriginX(), getOriginY(),
+        getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation() );
+         */
     }
     
     public void act(float dt)
