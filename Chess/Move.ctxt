@@ -7,6 +7,7 @@ comment2.params=b\ fromX\ fromY\ toX\ toY\ capture
 comment2.target=Move(Board,\ int,\ int,\ int,\ int,\ boolean)
 comment3.params=b\ fromX\ fromY\ toX\ toY
 comment3.target=Move(Board,\ int,\ int,\ int,\ int)
+comment3.text=\r\n\ This\ one\ was\ kind\ of\ deprecated,\ but\ now\ it's\ useful\ again.\r\n
 comment4.params=b\ p\ to
 comment4.target=Move(Board,\ Piece,\ Square)
 comment5.params=b\ p\ toX\ toY

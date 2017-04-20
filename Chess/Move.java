@@ -24,6 +24,9 @@ public class Move implements Serializable
     // because they're sorted when put into the ValidMoveList class.
     private boolean capture;
     
+    private boolean yourCheck;
+    private boolean theirCheck;
+    
     public Move(Square from, Square to)
     {
         this.from = from;
@@ -45,6 +48,9 @@ public class Move implements Serializable
         this.capture = capture;
     }
     
+    /**
+     * This one was kind of deprecated, but now it's useful again.
+     */
     public Move(Board b, int fromX, int fromY, int toX, int toY)
     {
         this.from =    b.getSquare(fromX, fromY);

@@ -19,7 +19,7 @@ public class Knight extends Piece
     {
         Knight copy = new Knight(this.isWhite, this.getX(), this.getY());
         
-        copy.setMoved(this.hasMoved());
+        //copy.setMoved(this.hasMoved());
         
         return copy;
     }

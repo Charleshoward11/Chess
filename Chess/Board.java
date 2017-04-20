@@ -16,18 +16,20 @@ import com.badlogic.gdx.scenes.scene2d.*;
  * @author (your name) 
  * @version (a version number or a date)
  */
-public class Board implements Serializable, Cloneable
+public class Board implements Serializable//, Cloneable
 {
     private Square[][] board = new Square[8][8];
     
-    // Maybe I should have ArrayLists for each color's pieces
+    // ArrayLists for each color's pieces
     private ArrayList<Piece> whitePieces = new ArrayList<Piece>();
     private ArrayList<Piece> blackPieces = new ArrayList<Piece>();
     
+    // These might be useful.
+    private King whiteKing;
+    private King blackKing;
+    
     // If I'm going to have en passant capabilities, 
     // there should probably be a variable here that stores a pawn that just double moved
-    
-    
     
     /**
      * Constructor for objects of class Board
@@ -43,7 +45,65 @@ public class Board implements Serializable, Cloneable
         }
     }
     
-    public Board clone(Board b)
+    /**
+     * Sets up the board in the default starting state for chess.
+     */
+    public Board resetBoard()
+    {
+        // Maybe I can have two ArrayLists, one of each color of pieces.
+        // I add all the pieces to their respective lists, then use a for/each
+        // loop on each list to place the pieces on the board.
+        
+        // Black pieces
+        blackPieces = new ArrayList<Piece>();
+        
+        blackKing = new King(false, 4,0);
+        blackPieces.add(blackKing);
+        
+        blackPieces.add(new Rook(false,   0,0));
+        blackPieces.add(new Knight(false, 1,0));
+        blackPieces.add(new Bishop(false, 2,0));
+        blackPieces.add(new Queen(false,  3,0));
+        blackPieces.add(new Bishop(false, 5,0));
+        blackPieces.add(new Knight(false, 6,0));
+        blackPieces.add(new Rook(false,   7,0));
+        for(int x = 0; x < 8; x++)
+        {
+            blackPieces.add(new Pawn(false, x,1));
+        }
+        for(Piece p : blackPieces)
+        {
+            placePiece(p);
+            p.setMoved(false);
+        }
+        
+        // White pieces
+        whitePieces = new ArrayList<Piece>();
+        
+        whiteKing = new King(true, 4,7);
+        whitePieces.add(whiteKing);
+        
+        whitePieces.add(new Rook(true,   0,7));
+        whitePieces.add(new Knight(true, 1,7));
+        whitePieces.add(new Bishop(true, 2,7));
+        whitePieces.add(new Queen(true,  3,7));
+        whitePieces.add(new Bishop(true, 5,7));
+        whitePieces.add(new Knight(true, 6,7));
+        whitePieces.add(new Rook(true,   7,7));
+        for(int x = 0; x < 8; x++)
+        {
+            whitePieces.add(new Pawn(true, x,6));
+        }
+        for(Piece p : whitePieces)
+        {
+            placePiece(p);
+            p.setMoved(false);
+        }
+        
+        return this;
+    }
+    
+    public Board clone()
     {
         Board copy = new Board();
         
@@ -56,9 +116,24 @@ public class Board implements Serializable, Cloneable
             {
                 if(this.getPiece(x,y) != null)
                 {
-                    copy.getSquare(x,y).setPiece(this.getPiece(x,y).clone());
+                    Piece copyPiece = this.getPiece(x,y).clone();
+                    copyPiece.setMoved(this.getPiece(x,y).hasMoved());
                     
-                    // Add the piece to the ArrayList?
+                    copy.getSquare(x,y).setPiece(copyPiece);
+                    
+                    //Add the piece to the ArrayList?
+                    if(copyPiece.isWhite)
+                    {
+                        copy.whitePieces.add(copyPiece);
+                        if(copyPiece.isKing())
+                            whiteKing = (King)copyPiece;
+                    }
+                    else
+                    {
+                        copy.blackPieces.add(copyPiece);
+                        if(copyPiece.isKing())
+                            blackKing = (King)copyPiece;
+                    }
                 }
             }
         }
@@ -114,15 +189,7 @@ public class Board implements Serializable, Cloneable
         
         ArrayList<ArrayList<Move>> moves = p.getMoves(this);
         
-        // There's a LOT of other rules associated with castling, but I'll put those in later.
-        if((p.isRook() || p.isKing()) && !p.hasMoved())
-        {
-            for(Move m : moves.get(0))
-            {
-                processedMoves.addMove(m);
-            }
-            moves.remove(0);
-        }
+        
         
         // If/else block for the different styles of movement:
         if(p.isQueen() || p.isRook() || p.isBishop())
@@ -171,6 +238,8 @@ public class Board implements Serializable, Cloneable
             // "Walkers": King, Knight
             // These pieces have set distances at which they can move and capture. I just need to evaluate each move's viability.
             
+            // Need to call the canCastle method.
+            
             for(Move m : moves.get(0))
             {
                 if(m.getTo().hasPiece())
@@ -212,7 +281,7 @@ public class Board implements Serializable, Cloneable
                 }
             }
             
-            // Still need the captures?
+            // The captures.
             for(Move mm : moves.get(1))
             {
                 Square s = mm.getTo();
@@ -223,6 +292,21 @@ public class Board implements Serializable, Cloneable
                         processedMoves.addCapture(mm);
                     }
                 }
+            }
+        }
+        
+        // Maybe I should handle castling down here.
+        
+        // There's a LOT of other rules associated with castling, but I'll put those in later.
+        if(!p.hasMoved())
+        {
+            if(p.isRook() || p.isKing())
+            {
+                for(Move m : moves.get(moves.size() - 1))
+                {
+                    processedMoves.addMove(m);
+                }
+                moves.remove(0);
             }
         }
         
@@ -244,9 +328,6 @@ public class Board implements Serializable, Cloneable
         return board[x][y];
     }
     
-    /**
-     * I was doing this so much that there might as well be a method for it.
-     */
     public Piece getPiece(int x, int y)
     {
         return board[x][y].getPiece();
@@ -291,20 +372,17 @@ public class Board implements Serializable, Cloneable
     public boolean movePiece(Move m)
     //throws Exception
     {
-        // Might be able to remove these two, as the program logically shouldn't be able to call this method with bad coordinates.
-        if(m.getFrom().getPiece() == null)
-        {
-            return false;
-        }
-        
-        // If there's a piece on the TO space that's the same color, I.E. trying to take your own piece.
         Piece f = m.getFrom().getPiece();
         Piece t = m.getTo().getPiece();
         
-        if(t != null)
+        if(f != null && t != null)
         {
+            // If there's a piece on the TO space that's the same color, I.E. trying to take your own piece.
             if(t.isWhite == f.isWhite)
+            {
+                // Maybe this should throw some sort of InvalidMoveException?
                 return false;
+            }
             else
             {
                 // Deal with the capturing of the piece here.
@@ -319,10 +397,15 @@ public class Board implements Serializable, Cloneable
                 }
             }
         }
+        else
+        {
+            // Maybe this should throw some sort of InvalidMoveException?
+            return false;
+        }
         
-        Piece p = m.getFrom().removePiece();
+        //m.getFrom().removePiece();
         
-        p.setSquare(m.getTo());
+        f.setSquare(m.getTo());
         
         //return placePiece(p);
         return true;
@@ -345,94 +428,59 @@ public class Board implements Serializable, Cloneable
     }
     
     /**
-     * Sets up the board in the default starting state for chess.
+     * Takes in a move for any board,
+     * and returns an identical move on this board.
      */
-    public Board resetBoard()
+    public Move cloneMove(Move m)
     {
-        // Maybe I can have two ArrayLists, one of each color of pieces.
-        // I add all the pieces to their respective lists, then use a for/each
-        // loop on each list to place the pieces on the board.
-        
-        // Black pieces
-        blackPieces.add(new Rook(false,   0,0));
-        blackPieces.add(new Knight(false, 1,0));
-        blackPieces.add(new Bishop(false, 2,0));
-        blackPieces.add(new Queen(false,  3,0));
-        blackPieces.add(new King(false,   4,0));
-        blackPieces.add(new Bishop(false, 5,0));
-        blackPieces.add(new Knight(false, 6,0));
-        blackPieces.add(new Rook(false,   7,0));
-        for(int x = 0; x < 8; x++)
-        {
-            blackPieces.add(new Pawn(false, x,1));
-        }
-        for(Piece p : blackPieces)
-        {
-            placePiece(p);
-            p.setMoved(false);
-        }
-        
-        // White pieces
-        whitePieces.add(new Rook(true,   0,7));
-        whitePieces.add(new Knight(true, 1,7));
-        whitePieces.add(new Bishop(true, 2,7));
-        whitePieces.add(new Queen(true,  3,7));
-        whitePieces.add(new King(true,   4,7));
-        whitePieces.add(new Bishop(true, 5,7));
-        whitePieces.add(new Knight(true, 6,7));
-        whitePieces.add(new Rook(true,   7,7));
-        for(int x = 0; x < 8; x++)
-        {
-            whitePieces.add(new Pawn(true, x,6));
-        }
-        for(Piece p : whitePieces)
-        {
-            placePiece(p);
-            p.setMoved(false);
-        }
-        
-        return this;
+        return new Move(this, m.from.x,m.from.y, m.to.x,m.to.y);
     }
-    
-    // Need a cloning method or something like that for all the methods dealing in potential moves.
     
     /**
      * Takes in a King, and checks every possible move in the other player's turn.
      * 
-     * @returns true if the player of the given King is in check.
+     * @returns true if the given King is in check.
      */
     public boolean isInCheck(King k)
     {
-        // Change this to use the ArrayLists containing the pieces themselves.
-        for(Square[] ss : board)
+        ArrayList<Piece> enemyPieces = new ArrayList<Piece>();
+        if(k.isWhite)
+            enemyPieces.addAll(blackPieces);
+        else
+            enemyPieces.addAll(whitePieces);
+        
+        for(Piece p : enemyPieces)
         {
-            for(Square s : ss)
+            ValidMoveList ml = getValidMoves(p);
+            
+            for(Move c : ml.getCaptures())
             {
-                if(s.hasPiece())
+                if(c.getTo().x == k.getX() && c.getTo().y == k.getY())
                 {
-                    Piece p = s.getPiece();
-                
-                    if(p.isWhite != k.isWhite)
-                    {
-                        ValidMoveList ml = getValidMoves(p);
-                        
-                        for(Move c : ml.getCaptures())
-                        {
-                            if(c.getTo().x == k.getX() && c.getTo().y == k.getY())
-                            {
-                                System.out.println("Check");
-                                
-                                return true;
-                            }
-                        }
-                    }
+                    //System.out.println("Check");
+                    return true;
                 }
             }
         }
         
-        System.out.println("No check");
-        
+        //System.out.println("No check");
         return false;
+    }
+    
+    /**
+     * Takes in a move and a player's color(represented by a boolean).
+     * 
+     * @returns true if that player's king would be in check as a result of that move.
+     */
+    public boolean wouldCauseCheck(Move m, boolean isWhite)
+    {
+        Board copyBoard = this.clone();
+        
+        King k = copyBoard.getKing(isWhite);
+        
+        copyBoard.movePiece(copyBoard.cloneMove(m));
+        
+        return copyBoard.isInCheck(k);
     }
     
     public boolean canCastle(King k, Rook r)
@@ -440,39 +488,45 @@ public class Board implements Serializable, Cloneable
         // I might need to make it so the method takes in two PIECES instead, 
         // and checks if they're a king and a rook here. This might avoid crashes.
         
-        // If either piece has moved
-        if(k.hasMoved() || r.hasMoved())
-        {
+        // If either piece has moved, or if they're not the same color.
+        if(k.hasMoved() || r.hasMoved() || k.isWhite != r.isWhite)
             return false;
+        
+        // If other pieces are in the way. Not working?
+        // Maybe do a thing with a modifier variable to process 
+        // if the rook is to the left or right of the king.
+        
+        // I actually don't need to bother with that.
+        // The for loops do it for me.
+        
+        for(int i = 3; i > r.getX(); i--)
+        {
+            Square s = board[i][k.getY()];
+            
+            if(s.getPiece() != null)
+                return false;
+                
+            // I'm not creating an entire clone unless I have to.
+            if(i > 1)
+                if(wouldCauseCheck(new Move(k.getSquare(), s), k.isWhite))
+                    return false;
         }
         
-        // If other pieces are in the way. Not working.
-        int i;
-        for(i = k.getX() - 1; i > r.getX(); i--)
+        for(int i = 5; i < r.getX(); i++)
         {
+            Square s = board[i][k.getY()];
+            
             if(board[i][k.getY()].getPiece() != null)
-            {
                 return false;
-            }
-        }
-        for(i = k.getX() + 1; i < r.getX(); i++)
-        {
-            if(board[i][k.getY()].getPiece() != null)
-            {
+                
+            if(wouldCauseCheck(new Move(k.getSquare(), s), k.isWhite))
                 return false;
-            }
         }
         
         
         // If King is in check
         if(isInCheck(k))
-        {
             return false;
-        }
-        
-        // If King would be moving into check
-        
-        // If King would be moving through check
         
         // If none of those were true
         return true;
@@ -486,6 +540,70 @@ public class Board implements Serializable, Cloneable
     public ArrayList<Piece> getBlackPieces()
     {
         return this.blackPieces;
+    }
+    
+    public ArrayList<Piece> getAllPieces()
+    {
+        ArrayList<Piece> allPieces = new ArrayList<Piece>();
+        allPieces.addAll(whitePieces);
+        allPieces.addAll(blackPieces);
+        
+        return allPieces;
+    }
+    
+    public King getWhiteKing()
+    {
+        return this.whiteKing;
+    }
+    
+    public King getBlackKing()
+    {
+        return this.blackKing;
+    }
+    
+    public King getKing(boolean isWhite)
+    {
+        if(isWhite)
+            return this.whiteKing;
+        else
+            return this.blackKing;
+    }
+    
+    /**
+     * Gets an ArrayList of all rooks of a specified player.
+     * Used with castling.
+     * 
+     * @param isWhite    Whether the player is black or white.
+     * @return           That player's rooks.
+     */
+    public ArrayList<Rook> getRooks(boolean isWhite)
+    {
+        ArrayList<Rook> rooks = new ArrayList<Rook>();
+        
+        if(isWhite)
+        {
+            for(Piece p : getWhitePieces())
+            {
+                if(p.isRook())
+                {
+                    Rook r = (Rook)p;
+                    rooks.add(r);
+                }
+            }
+        }
+        else
+        {
+            for(Piece p : getBlackPieces())
+            {
+                if(p.isRook())
+                {
+                    Rook r = (Rook)p;
+                    rooks.add(r);
+                }
+            }
+        }
+        
+        return rooks;
     }
     
     //public boolean isThreatenedBy()

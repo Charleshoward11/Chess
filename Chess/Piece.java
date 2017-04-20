@@ -60,6 +60,7 @@ public abstract class Piece implements Cloneable
      */
     public Piece setSquare(Square target)
     {
+        //this.currentSquare.removePiece();
         this.currentSquare = target;
         if(target.getPiece() != this)
             target.setPiece(this);

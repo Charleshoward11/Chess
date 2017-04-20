@@ -9,4 +9,6 @@ comment3.params=keycode
 comment3.target=boolean\ keyDown(int)
 comment4.params=screenX\ screenY
 comment4.target=boolean\ mouseMoved(int,\ int)
-numComments=5
+comment5.params=m
+comment5.target=void\ performMove(Move)
+numComments=6

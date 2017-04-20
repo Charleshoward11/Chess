@@ -110,30 +110,29 @@ public class ChessScreen extends BaseScreen
             
             //System.out.println(p.name);
             
-            //Something to figure out if the piece was dropped on a valid target, 
-            //and then correct its position onto the target.
-            
-            
-            
-            
             if(s != null)
             {
                 dropped.piece.setSquare(s.square);
                 //dropped.moveToActor(s);
             }
             
+            // Finds each piece 
             for(BaseActor b : BaseActor.getList("PieceActor"))
             {
                 PieceActor c = (PieceActor)b;
-                //c.moveToActor(c.piece.getSquare().getActor());
+                c.moveToActor(c.piece.getSquare().getActor());
                 
-                c.alignToActorCenter(c.piece.getSquare().getActor());
+                // Should I remove captured pieces here?
+                if(!(board.getWhitePieces().contains(c.piece) || board.getBlackPieces().contains(c.piece)))
+                {
+                    //c.remove();
+                }
+                
+                //c.alignToActorCenter(c.piece.getSquare().getActor());
             }
             
             dropped.setDropped(false);
         }
-        
-        BaseActor.updateAllLists();
     }
     
     // handle discrete input
@@ -157,5 +156,10 @@ public class ChessScreen extends BaseScreen
         //}
         
         return false;
+    }
+    
+    public void performMove(Move m)
+    {
+        
     }
 }

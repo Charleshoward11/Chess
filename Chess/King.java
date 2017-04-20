@@ -21,7 +21,7 @@ public class King extends Piece
     {
         King copy = new King(this.isWhite, this.getX(), this.getY());
         
-        copy.setMoved(this.hasMoved());
+        //copy.setMoved(this.hasMoved());
         
         return copy;
     }
@@ -33,14 +33,7 @@ public class King extends Piece
     {
         ArrayList<ArrayList<Move>> m = new ArrayList<ArrayList<Move>>();
         
-        // Castling.
-        if(!hasMoved())
-        {
-            ArrayList<Move> castling = new ArrayList<Move>();
-            castling.add(new Move(b, this, b.getSquare(6, getY())));
-            castling.add(new Move(b, this, b.getSquare(2, getY())));
-            m.add(castling);
-        }
+        
         
         ArrayList<Move> moves = new ArrayList<Move>();
         m.add(moves);
@@ -92,7 +85,16 @@ public class King extends Piece
         }
         if(getY() < 7)
         {
-            moves.add(new Move(b, this, b.getSquare(getX(), getY() - 1)));
+            moves.add(new Move(b, this, b.getSquare(getX(), getY() + 1)));
+        }
+        
+        // Castling.
+        if(!hasMoved())
+        {
+            ArrayList<Move> castling = new ArrayList<Move>();
+            castling.add(new Move(b, this, b.getSquare(6, getY())));
+            castling.add(new Move(b, this, b.getSquare(2, getY())));
+            m.add(castling);
         }
         
         return m;

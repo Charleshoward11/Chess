@@ -19,7 +19,7 @@ public class Pawn extends Piece
     {
         Pawn copy = new Pawn(this.isWhite, this.getX(), this.getY());
         
-        copy.setMoved(this.hasMoved());
+        //copy.setMoved(this.hasMoved());
         
         return copy;
     }

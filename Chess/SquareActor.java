@@ -9,6 +9,8 @@ import com.badlogic.gdx.math.Intersector.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.viewport.*;
 
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+
 /**
  * Actor that contains a square.
  * 
@@ -74,7 +76,7 @@ public class SquareActor extends DragAndDropActor
         isM = true;
         isC = false;
         
-        setColor(new Color(1.0f, 0.5f, 0.5f, 1));
+        this.addAction(Actions.color(new Color(1.0f, 0.5f, 0.5f, 1), 0.1f));
     }
     
     public void setCapture()
@@ -82,7 +84,7 @@ public class SquareActor extends DragAndDropActor
         isM = false;
         isC = true;
         
-        setColor(new Color(1.0f, 1.0f, 0.5f, 1));
+        this.addAction(Actions.color(new Color(1.0f, 1.0f, 0.5f, 1), 0.1f));
     }
     
     public void setBlank()
@@ -90,7 +92,7 @@ public class SquareActor extends DragAndDropActor
         isM = false;
         isC = false;
         
-        setColor(new Color(1.0f, 1.0f, 1.0f, 1));
+        this.addAction(Actions.color(new Color(1.0f, 1.0f, 1.0f, 1), 0.1f));
     }
     
     /**
@@ -112,5 +114,6 @@ public class SquareActor extends DragAndDropActor
     
     public void act(float dt)
     {
+        super.act(dt);
     }
 }

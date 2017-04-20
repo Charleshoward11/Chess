@@ -97,5 +97,6 @@ public class PieceActor extends DragAndDropActor
     
     public void act(float dt)
     {
+        super.act(dt);
     }
 }

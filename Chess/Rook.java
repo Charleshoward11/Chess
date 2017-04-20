@@ -19,7 +19,7 @@ public class Rook extends Piece
     {
         Rook copy = new Rook(this.isWhite, this.getX(), this.getY());
         
-        copy.setMoved(this.hasMoved());
+        //copy.setMoved(this.hasMoved());
         
         return copy;
     }
@@ -37,20 +37,7 @@ public class Rook extends Piece
         
         int h, v;
         
-        ArrayList<Move> castling = new ArrayList<Move>();
-        if(!hasMoved())
-        {
-            if(h1 == 0)
-            {
-                castling.add(new Move(b, h1, v1, 3, v1));
-            }
-            else if(h1 == 7)
-            {
-                castling.add(new Move(b, h1, v1, 5, v1));
-            }
-        }
         
-        moves.add(castling);
         
         /* Adding moves in this direction:
          * [ ][ ][ ]
@@ -107,6 +94,21 @@ public class Rook extends Piece
             v++;
         }
         moves.add(current);
+        
+        ArrayList<Move> castling = new ArrayList<Move>();
+        if(!hasMoved())
+        {
+            if(h1 == 0)
+            {
+                castling.add(new Move(b, h1, v1, 3, v1));
+            }
+            else if(h1 == 7)
+            {
+                castling.add(new Move(b, h1, v1, 5, v1));
+            }
+        }
+        
+        moves.add(castling);
         
         return moves;
     }

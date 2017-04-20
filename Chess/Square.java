@@ -66,11 +66,9 @@ public class Square implements Serializable
      * Is this necessary? Can I just call setPiece with null as an argument?
      * Probably not at this point.
      */
-    public Piece removePiece()
+    public void removePiece()
     {
-        Piece p = this.currentPiece;
         this.currentPiece = null;
-        return p;
     }
     
     public Square setSelectionStatus(String s)

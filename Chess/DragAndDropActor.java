@@ -139,8 +139,8 @@ public class DragAndDropActor extends BaseActor
                         }
                     }
                     
-                    // This doesn't work, not sure why.
-                    self.addAction(Actions.scaleTo(1.25f, 1.25f, 0.25f));
+                    // This doesn't work, not sure why. FIXED IT.
+                    self.addAction(Actions.scaleTo(1.25f, 1.25f, 0.1f));
                     
                     return true; // returning true indicates other touch methods are called
                 }
@@ -202,23 +202,23 @@ public class DragAndDropActor extends BaseActor
                     
                     SquareActor tar = (SquareActor)target;
                     
-                    if(tar.isMove() || tar.isCapture())
+                    if(tar != null && (tar.isMove() || tar.isCapture()))
                     {
                         self.setDropTarget(target);
                         PieceActor p = (PieceActor)self;
                         
                         if(tar.isCapture())
                         {
-                            tar.square.getPiece().getActor().addAction(Actions.removeActor());
+                            tar.square.getPiece().getActor().addAction(Actions.sequence(
+                            Actions.fadeOut(0.05f), Actions.removeActor()));
                         }
-                        
+                        Square prev = p.piece.getSquare();
                         board.movePiece(p.piece, tar.square);
-                        
-                        
+                        prev.removePiece();
                     }
                     
-                    // This doesn't work. Not sure why.
-                    self.addAction(Actions.scaleTo(1.00f, 1.00f, 0.25f));
+                    // This doesn't work. Not sure why. FIXED IT.
+                    self.addAction(Actions.scaleTo(1.00f, 1.00f, 0.1f));
                     
                     // Unhighlighting all the SquareActors. 
                     // Maybe this could go in the for loop above.
@@ -247,12 +247,12 @@ public class DragAndDropActor extends BaseActor
     
     public void moveToActor(BaseActor other)
     {
-        addAction(Actions.moveTo(other.getX(), other.getY(), 0.50f, Interpolation.pow3));
+        addAction(Actions.moveTo(other.getX(), other.getY(), 0.1f, Interpolation.pow3));
     }
     
     public void moveToStart()
     {
-        addAction(Actions.moveTo(startPositionX, startPositionY, 0.50f, Interpolation.pow3));
+        addAction(Actions.moveTo(startPositionX, startPositionY, 0.1f, Interpolation.pow3));
         startPositionX = null;
         startPositionY = null;
     }
