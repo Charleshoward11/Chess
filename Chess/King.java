@@ -88,7 +88,7 @@ public class King extends Piece
             moves.add(new Move(b, this, b.getSquare(getX(), getY() + 1)));
         }
         
-        // Castling.
+        // Castling. Need to update this.
         if(!hasMoved())
         {
             ArrayList<Move> castling = new ArrayList<Move>();
@@ -99,6 +99,8 @@ public class King extends Piece
         
         return m;
     }
+    
+    // Maybe a castling method here (or somewhere) that moves the king and the rook at the same time?
     
     public King setCheck(boolean c)
     {

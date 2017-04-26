@@ -28,6 +28,8 @@ public class Board implements Serializable//, Cloneable
     private King whiteKing;
     private King blackKing;
     
+    public boolean isClone = false;
+    
     // If I'm going to have en passant capabilities, 
     // there should probably be a variable here that stores a pawn that just double moved
     
@@ -107,6 +109,9 @@ public class Board implements Serializable//, Cloneable
     {
         Board copy = new Board();
         
+        // Boolean to check if it's a clone
+        copy.isClone = true;
+        
         copy.whitePieces = new ArrayList<Piece>();
         copy.blackPieces = new ArrayList<Piece>();
         
@@ -117,22 +122,23 @@ public class Board implements Serializable//, Cloneable
                 if(this.getPiece(x,y) != null)
                 {
                     Piece copyPiece = this.getPiece(x,y).clone();
-                    copyPiece.setMoved(this.getPiece(x,y).hasMoved());
                     
                     copy.getSquare(x,y).setPiece(copyPiece);
+                    
+                    copyPiece.setMoved(this.getPiece(x,y).hasMoved());
                     
                     //Add the piece to the ArrayList?
                     if(copyPiece.isWhite)
                     {
                         copy.whitePieces.add(copyPiece);
                         if(copyPiece.isKing())
-                            whiteKing = (King)copyPiece;
+                            copy.whiteKing = (King)copyPiece;
                     }
                     else
                     {
                         copy.blackPieces.add(copyPiece);
                         if(copyPiece.isKing())
-                            blackKing = (King)copyPiece;
+                            copy.blackKing = (King)copyPiece;
                     }
                 }
             }
@@ -167,29 +173,21 @@ public class Board implements Serializable//, Cloneable
         System.out.println(" +--0-+--1-+--2-+--3-+--4-+--5-+--6-+--7-+");
     }
     
-    public Board clearSelections()
-    {
-        for(Square[] ss : board)
-        {
-            for(Square s : ss)
-            {
-                s.setSelectionStatus(" ");
-            }
-        }
-        
-        return this;
-    }
-    
     /**
      * Requests a piece's moveset, then does a second pass on it to apply it to the board's current state.
      */
-    public ValidMoveList getValidMoves(Piece p)
+    public ValidMoveList getValidMoves(Piece p, boolean getChecks)
     {
-        ValidMoveList processedMoves = new ValidMoveList();
+        ArrayList<Move> moves = new ArrayList<Move>();
+        ArrayList<Move> captures = new ArrayList<Move>();
+        ArrayList<Move> checks = new ArrayList<Move>();
+        ArrayList<Move> checkmates = new ArrayList<Move>();
+        ArrayList<Move> selfChecks = new ArrayList<Move>();
+        ArrayList<Move> castles = new ArrayList<Move>();
         
-        ArrayList<ArrayList<Move>> moves = p.getMoves(this);
         
         
+        ArrayList<ArrayList<Move>> baseMoves = p.getMoves(this);
         
         // If/else block for the different styles of movement:
         if(p.isQueen() || p.isRook() || p.isBishop())
@@ -200,7 +198,7 @@ public class Board implements Serializable//, Cloneable
             // and invalidate the rest of the moves in that line.
             
             // Iterating through each direction of movement.
-            for(int i = 0; i < moves.size(); i++)
+            for(int i = 0; i < baseMoves.size(); i++)
             {
                 // Iterating through each square in that direction.
                 // This for loop actually starts on the second element because of how the pieces say they move.
@@ -210,9 +208,9 @@ public class Board implements Serializable//, Cloneable
                 // and the program essentially decides that the piece can't move because it's in its own way.
                 // Instead of changing the piece's getMoves method to not return the illegal moves in the first place,
                 // I just told the program to start on the second move of each direction. It was simpler.
-                for(int j = 1; j < moves.get(i).size(); j++)
+                for(int j = 1; j < baseMoves.get(i).size(); j++)
                 {
-                    Move m = moves.get(i).get(j);
+                    Move m = baseMoves.get(i).get(j);
                     
                     if(m.getTo().hasPiece())
                     {
@@ -222,14 +220,14 @@ public class Board implements Serializable//, Cloneable
                         // then the move is marked as a capture and added to the list.
                         if(p.isWhite != d.isWhite)
                         {
-                            processedMoves.addCapture(m);
+                            captures.add(m);
                         }
                         
                         // Regardless of whether this move is a capture or not, the piece can move no further in this direction.
                         break;
                     }
                     
-                    processedMoves.addMove(m);
+                    moves.add(m);
                 }
             }
         }
@@ -240,7 +238,7 @@ public class Board implements Serializable//, Cloneable
             
             // Need to call the canCastle method.
             
-            for(Move m : moves.get(0))
+            for(Move m : baseMoves.get(0))
             {
                 if(m.getTo().hasPiece())
                 {
@@ -251,13 +249,13 @@ public class Board implements Serializable//, Cloneable
                     if(p.isWhite != d.isWhite)
                     {
                         //m.setCapture(true);
-                        processedMoves.addCapture(m);
+                        captures.add(m);
                     }
                 }
                 else
                 {
                     // Why is this adding it as a capture? Is that a mistake?
-                    processedMoves.addMove(m);
+                    moves.add(m);
                 }
             }
         }
@@ -265,31 +263,33 @@ public class Board implements Serializable//, Cloneable
         {
             // Pawns just kinda do their own thing
             
-            Move m = moves.get(0).get(0);
+            Move m = baseMoves.get(0).get(0);
             
+            // They can't capture forward.
             if(!m.getTo().hasPiece())
             {
-                processedMoves.addMove(m);
+                moves.add(m);
                 
-                if(!p.hasMoved() && (moves.get(0).size() == 2))
+                // The double move was added sometime between 1200 and 1600 to speed up the early game.
+                if(!p.hasMoved() && (baseMoves.get(0).size() == 2))
                 {
-                    m = moves.get(0).get(1);
+                    m = baseMoves.get(0).get(1);
                     if(!m.getTo().hasPiece())
                     {
-                        processedMoves.addMove(m);
+                        moves.add(m);
                     }
                 }
             }
             
             // The captures.
-            for(Move mm : moves.get(1))
+            for(Move mm : baseMoves.get(1))
             {
                 Square s = mm.getTo();
                 if(s.hasPiece())
                 {
                     if(p.isWhite != s.getPiece().isWhite)
                     {
-                        processedMoves.addCapture(mm);
+                        captures.add(mm);
                     }
                 }
             }
@@ -302,25 +302,55 @@ public class Board implements Serializable//, Cloneable
         {
             if(p.isRook() || p.isKing())
             {
-                for(Move m : moves.get(moves.size() - 1))
+                for(Move m : baseMoves.get(baseMoves.size() - 1))
                 {
-                    processedMoves.addMove(m);
+                    castles.add(m);
                 }
-                moves.remove(0);
+                baseMoves.remove(0);
             }
         }
+        
+        // Go over the moves/captures again, figure out what their results are.
+        if(getChecks)
+        {
+            ArrayList<Move> mm = new ArrayList<Move>();
+            mm.addAll(moves);
+            mm.addAll(captures);
+            mm.addAll(castles);
+            
+            for(Move m : mm)
+            {
+                if(wouldCauseCheck(m, !p.isWhite))
+                {
+                    //moves.remove(m);
+                    selfChecks.add(m);
+                }
+                else if(wouldCauseCheck(m, p.isWhite))
+                {
+                    //moves.remove(m);
+                    checks.add(m);
+                }
+            }
+        }
+        
+        ValidMoveList processedMoves = new ValidMoveList(moves, captures, checks, checkmates, selfChecks, castles);
         
         return processedMoves;
     }
     
+    public ValidMoveList getValidMoves(Piece p)
+    {
+        return getValidMoves(p, true);
+    }
+    
     public ValidMoveList getValidMoves(Square s)
     {
-        return getValidMoves(s.getPiece());
+        return getValidMoves(s.getPiece(), true);
     }
     
     public ValidMoveList getValidMoves(int x, int y)
     {
-        return getValidMoves(board[x][y].getPiece());
+        return getValidMoves(board[x][y].getPiece(), true);
     }
     
     public Square getSquare(int x, int y)
@@ -372,6 +402,8 @@ public class Board implements Serializable//, Cloneable
     public boolean movePiece(Move m)
     //throws Exception
     {
+        
+        
         Piece f = m.getFrom().getPiece();
         Piece t = m.getTo().getPiece();
         
@@ -389,19 +421,19 @@ public class Board implements Serializable//, Cloneable
                 // Make sure to remove the piece from its ArrayList.
                 if(t.isWhite)
                 {
-                    whitePieces.remove(t);
+                    this.whitePieces.remove(t);
                 }
                 else
                 {
-                    blackPieces.remove(t);
+                    this.blackPieces.remove(t);
                 }
             }
         }
-        else
-        {
+        //else
+        //{
             // Maybe this should throw some sort of InvalidMoveException?
-            return false;
-        }
+        //    return false;
+        //}
         
         //m.getFrom().removePiece();
         
@@ -444,14 +476,12 @@ public class Board implements Serializable//, Cloneable
     public boolean isInCheck(King k)
     {
         ArrayList<Piece> enemyPieces = new ArrayList<Piece>();
-        if(k.isWhite)
-            enemyPieces.addAll(blackPieces);
-        else
-            enemyPieces.addAll(whitePieces);
+        
+        enemyPieces.addAll(getPieces(!k.isWhite));
         
         for(Piece p : enemyPieces)
         {
-            ValidMoveList ml = getValidMoves(p);
+            ValidMoveList ml = getValidMoves(p, false);
             
             for(Move c : ml.getCaptures())
             {
@@ -468,17 +498,22 @@ public class Board implements Serializable//, Cloneable
     }
     
     /**
-     * Takes in a move and a player's color(represented by a boolean).
+     * Takes in a Move and a Piece's color (represented by a boolean).
+     * Maybe I can refactor all this into an all-purpose method that 
+     * returns an enum stating WHICH player is in check. The less 
+     * clone-boards I have to create, the better.
      * 
-     * @returns true if that player's king would be in check as a result of that move.
+     * @returns true if the Move would put the other player's King in check.
      */
     public boolean wouldCauseCheck(Move m, boolean isWhite)
     {
         Board copyBoard = this.clone();
         
-        King k = copyBoard.getKing(isWhite);
+        King k = copyBoard.getKing(!isWhite);
         
-        copyBoard.movePiece(copyBoard.cloneMove(m));
+        Move cm = copyBoard.cloneMove(m);
+        
+        copyBoard.movePiece(cm);
         
         return copyBoard.isInCheck(k);
     }
@@ -523,13 +558,25 @@ public class Board implements Serializable//, Cloneable
                 return false;
         }
         
-        
         // If King is in check
         if(isInCheck(k))
             return false;
         
         // If none of those were true
         return true;
+    }
+    
+    /**
+     * Maybe I can put the castling moves in their own little moveList.
+     */
+    public void castle(King k, Rook r)
+    {
+        if(k.hasMoved() || r.hasMoved())
+        {
+            // Throw exception?
+        }
+        
+        
     }
     
     public ArrayList<Piece> getWhitePieces()
@@ -539,6 +586,20 @@ public class Board implements Serializable//, Cloneable
     
     public ArrayList<Piece> getBlackPieces()
     {
+        return this.blackPieces;
+    }
+    
+    /**
+     * Combined version of two older methods, getWhitePieces() and getBlackPieces().
+     * 
+     * @param isWhite    Whether the player is black or white.
+     * @return           That player's pieces.
+     */
+    public ArrayList<Piece> getPieces(boolean isWhite)
+    {
+        if(isWhite)
+            return this.whitePieces;
+        
         return this.blackPieces;
     }
     
@@ -580,26 +641,12 @@ public class Board implements Serializable//, Cloneable
     {
         ArrayList<Rook> rooks = new ArrayList<Rook>();
         
-        if(isWhite)
+        for(Piece p : getPieces(isWhite))
         {
-            for(Piece p : getWhitePieces())
+            if(p.isRook())
             {
-                if(p.isRook())
-                {
-                    Rook r = (Rook)p;
-                    rooks.add(r);
-                }
-            }
-        }
-        else
-        {
-            for(Piece p : getBlackPieces())
-            {
-                if(p.isRook())
-                {
-                    Rook r = (Rook)p;
-                    rooks.add(r);
-                }
+                Rook r = (Rook)p;
+                rooks.add(r);
             }
         }
         

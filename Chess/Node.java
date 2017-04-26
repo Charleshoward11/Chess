@@ -16,12 +16,12 @@ public class Node
     public final int queenPoints = 10;
     
     // Points for this specific move.
-    public int points;
+    public final int points;
     
     // Points for the entire tree of moves.
     public int totalPoints;
     
-    public Move move;
+    public final Move move;
     
     /**
      * @param   m       The move.

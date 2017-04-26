@@ -77,7 +77,7 @@ public abstract class Piece implements Cloneable
     
     public Board getBoard()
     {
-        return this.currentSquare.b;
+        return this.currentSquare.board;
     }
     
     public Piece setX(int x)

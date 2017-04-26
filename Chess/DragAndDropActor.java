@@ -128,18 +128,37 @@ public class DragAndDropActor extends BaseActor
                     {
                         PieceActor pi = (PieceActor)self;
                         
-                        for(Move m : board.getValidMoves(pi.piece).getMoves())
+                        ValidMoveList moveList = board.getValidMoves(pi.piece, true);
+                        
+                        
+                
+                        for(Move m : moveList.getMoves())
                         {
                             m.to.getActor().setMove();
                         }
                         
-                        for(Move m : board.getValidMoves(pi.piece).getCaptures())
+                        for(Move m : moveList.getCaptures())
                         {
                             m.to.getActor().setCapture();
                         }
+                        
+                        // Checks
+                        for(Move m : moveList.getChecks())
+                        {
+                            m.to.getActor().setCheck();
+                        }
+                        
+                        // Checkmates
+                        
+                        // Self-Checks
+                        for(Move m : moveList.getSelfChecks())
+                        {
+                            m.to.getActor().setSelfCheck();
+                        }
+                        
+                        // Castles
                     }
                     
-                    // This doesn't work, not sure why. FIXED IT.
                     self.addAction(Actions.scaleTo(1.25f, 1.25f, 0.1f));
                     
                     return true; // returning true indicates other touch methods are called
@@ -202,12 +221,12 @@ public class DragAndDropActor extends BaseActor
                     
                     SquareActor tar = (SquareActor)target;
                     
-                    if(tar != null && (tar.isMove() || tar.isCapture()))
+                    if(tar != null && (tar.isMove() || tar.isCapture() || tar.isCheck()))
                     {
                         self.setDropTarget(target);
                         PieceActor p = (PieceActor)self;
                         
-                        if(tar.isCapture())
+                        if(tar.square.getPiece() != null)
                         {
                             tar.square.getPiece().getActor().addAction(Actions.sequence(
                             Actions.fadeOut(0.05f), Actions.removeActor()));

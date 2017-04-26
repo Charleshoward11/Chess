@@ -12,11 +12,7 @@ public class Square implements Serializable
     // Stores the piece currently on the square.
     private Piece currentPiece;
     
-    // Determines if the square is highlighted from a click or not.
-    // Possibilities are " ", "current selection", "possible move", "possible capture"
-    private String selectionStatus;
-    
-    public final Board b;
+    public final Board board;
     public final int x;
     public final int y;
     
@@ -24,11 +20,10 @@ public class Square implements Serializable
     
     public Square(int x, int y, Board b)
     {
-        this.selectionStatus = " ";
         this.currentPiece= null;
         this.x = x;
         this.y = y;
-        this.b = b;
+        this.board = b;
     }
     
     /**
@@ -55,9 +50,7 @@ public class Square implements Serializable
     public boolean hasPiece()
     {
         if (this.currentPiece == null)
-        {
             return false;
-        }
         
         return true;
     }
@@ -69,18 +62,6 @@ public class Square implements Serializable
     public void removePiece()
     {
         this.currentPiece = null;
-    }
-    
-    public Square setSelectionStatus(String s)
-    {
-        this.selectionStatus = s;
-        
-        return this;
-    }
-    
-    public String getSelectionStatus()
-    {
-        return this.selectionStatus;
     }
     
     /**
@@ -105,9 +86,9 @@ public class Square implements Serializable
     {
         if(currentPiece == null)
         {
-            return this.selectionStatus + "  " + this.selectionStatus;
+            return "  ";
         }
         
-        return this.selectionStatus + this.currentPiece + this.selectionStatus;
+        return "" + this.currentPiece;
     }
 }

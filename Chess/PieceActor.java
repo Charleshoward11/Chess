@@ -59,11 +59,12 @@ public class PieceActor extends DragAndDropActor
         setDraggable(true);
         setTargetable(true);
         
-        s.addActor(this);
-        
-        
+        //s.addActor(this);
     }
     
+    /**
+     * Since when has this been here? Do I even need it?
+     */
     public void draw(Batch batch, float parentAlpha) 
     {
 

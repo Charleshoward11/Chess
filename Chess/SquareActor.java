@@ -14,15 +14,37 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 /**
  * Actor that contains a square.
  * 
- * @author (your name) 
+ * When you pick up a piece, the available moves 
+ * get highlighted depending on their results:
+ * 
+ * @author Charles Howard
  * @version (a version number or a date)
  */
 public class SquareActor extends DragAndDropActor
 {
     public final Square square;
     
-    private boolean isM;
-    private boolean isC;
+    /**
+     * Normal moves are red
+     * Captures are green
+     * Check is purple?
+     * Checkmate is gold?
+     * Self-check is black
+     * Castle is blue
+     */
+    private enum Status 
+    {
+        BLANK, MOVE, CAPTURE, CHECK, CHECKMATE, SELFCHECK, CASTLE
+    }
+    
+    private Status status;
+    
+    private boolean move;
+    private boolean capture;
+    private boolean check;
+    private boolean checkMate;
+    private boolean selfCheck;
+    private boolean castle;
     
     /**
      * If the sum of the square's x and y coordinates is even, it's white.
@@ -30,7 +52,7 @@ public class SquareActor extends DragAndDropActor
      */
     public SquareActor(Square p, Stage s)
     {
-        super(0,0, s, p.b);
+        super(0,0, s, p.board);
         
         this.square = p.setActor(this);
         
@@ -39,77 +61,115 @@ public class SquareActor extends DragAndDropActor
         else
             loadTexture("assets/Square-Gray.png");
         
-        /*
-        loadTexture("assets/Square-White.png");
-        
-        if((this.square.x + this.square.y) % 2 == 0)
-        {
-            setColor(new Color(0.8f, 0.8f, 0.8f, 1));
-        }
-        else
-        {
-            setColor(new Color(0.6f, 0.6f, 0.6f, 1));
-        }
-         */
-        
         setDraggable(false);
         setTargetable(true);
         
-        isM = false;
-        isC = false;
+        status = Status.BLANK;
         
         s.addActor(this);
     }
     
+    public boolean isBlank()
+    {
+        return status == Status.BLANK;
+    }
+    
     public boolean isMove()
     {
-        return isM;
+        return status == Status.MOVE;
     }
     
     public boolean isCapture()
     {
-        return isC;
+        return status == Status.CAPTURE;
     }
     
-    public void setMove()
+    public boolean isCheck()
     {
-        isM = true;
-        isC = false;
-        
-        this.addAction(Actions.color(new Color(1.0f, 0.5f, 0.5f, 1), 0.1f));
+        return status == Status.CHECK;
     }
     
-    public void setCapture()
+    public boolean isCheckmate()
     {
-        isM = false;
-        isC = true;
-        
-        this.addAction(Actions.color(new Color(1.0f, 1.0f, 0.5f, 1), 0.1f));
+        return status == Status.CHECKMATE;
     }
     
-    public void setBlank()
+    public boolean isSelfCheck()
     {
-        isM = false;
-        isC = false;
+        return status == Status.SELFCHECK;
+    }
+    
+    public boolean isCastle()
+    {
+        return status == Status.CASTLE;
+    }
+    
+    public Status getStatus()
+    {
+        return this.status;
+    }
+    
+    public SquareActor setBlank()
+    {
+        status = Status.BLANK;
         
         this.addAction(Actions.color(new Color(1.0f, 1.0f, 1.0f, 1), 0.1f));
+        
+        return this;
     }
     
-    /**
-     * I'm not sure it's efficient to load from the file each time...
-     */
-    public void select()
+    public SquareActor setMove()
     {
-        if((this.square.x + this.square.y) % 2 == 0)
-            loadTexture("assets/Square-White-Select.png");
-        else
-            loadTexture("assets/Square-Gray-Select.png");
+        status = Status.MOVE;
+        
+        this.addAction(Actions.color(new Color(1.0f, 0.0f, 0.0f, 1), 0.1f));
+        
+        return this;
     }
     
-    public void deselect()
+    public SquareActor setCapture()
     {
+        status = Status.CAPTURE;
         
+        this.addAction(Actions.color(new Color(0.0f, 1.0f, 0.0f, 1), 0.1f));
         
+        return this;
+    }
+    
+    public SquareActor setCheck()
+    {
+        status = Status.CHECK;
+        
+        this.addAction(Actions.color(new Color(0.0f, 1.0f, 1.0f, 1), 0.1f));
+        
+        return this;
+    }
+    
+    public SquareActor setCheckmate()
+    {
+        status = Status.CHECKMATE;
+        
+        this.addAction(Actions.color(new Color(1.0f, 0.5f, 0.0f, 1), 0.1f));
+        
+        return this;
+    }
+    
+    public SquareActor setSelfCheck()
+    {
+        status = Status.SELFCHECK;
+        
+        this.addAction(Actions.color(new Color(0.0f, 0.0f, 0.0f, 0), 0.1f));
+        
+        return this;
+    }
+    
+    public SquareActor setCastle()
+    {
+        status = Status.CASTLE;
+        
+        this.addAction(Actions.color(new Color(0.0f, 0.0f, 1.0f, 1), 0.1f));
+        
+        return this;
     }
     
     public void act(float dt)

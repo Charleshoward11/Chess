@@ -42,9 +42,6 @@ public class ChessScreen extends BaseScreen
         
         mainStage.addActor(boardTable);
         
-        //Texture texture = new Texture( Gdx.files.internal(fileName));
-        //texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-        
         for(int y = 0; y < 8; y++)
         {
             for(int x = 0; x < 8; x++)
@@ -66,13 +63,6 @@ public class ChessScreen extends BaseScreen
         {
             p.setActor(new PieceActor(p, mainStage));
         }
-        
-        //SquareActor sa = new SquareActor(board.getSquare(4,4), mainStage);
-        //sa.setPosition(300, 300);
-        
-        //Pawn pawn = new Pawn(true, 4,4);
-        //pawn.setActor(new PieceActor(pawn, mainStage));
-        //board.placePiece(pawn);
         
         // I can't believe this worked.
         render(0f);
@@ -135,29 +125,9 @@ public class ChessScreen extends BaseScreen
         }
     }
     
-    // handle discrete input
-    public boolean keyDown(int keycode)
-    {
-        if(keycode == Keys.SPACE)
-        {
-            
-        }
-        
-        return false;
-    }
-    
-    public boolean mouseMoved(int screenX, int screenY)
-    {
-        //BaseActor b = (BaseActor)mainStage.hit(screenX,screenY, true);
-        
-        //if(b != null)
-        //{
-        //    s.select();
-        //}
-        
-        return false;
-    }
-    
+    /**
+     * Performs a move without the player's input.
+     */
     public void performMove(Move m)
     {
         
