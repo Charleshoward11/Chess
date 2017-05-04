@@ -29,6 +29,8 @@ public class ChessAI
      */
     public Move decideMove()
     {
-        
+        return null;
     }
+    
+    
 }

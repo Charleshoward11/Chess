@@ -33,8 +33,6 @@ public class King extends Piece
     {
         ArrayList<ArrayList<Move>> m = new ArrayList<ArrayList<Move>>();
         
-        
-        
         ArrayList<Move> moves = new ArrayList<Move>();
         m.add(moves);
         
@@ -88,6 +86,7 @@ public class King extends Piece
             moves.add(new Move(b, this, b.getSquare(getX(), getY() + 1)));
         }
         
+        /*
         // Castling. Need to update this.
         if(!hasMoved())
         {
@@ -96,6 +95,7 @@ public class King extends Piece
             castling.add(new Move(b, this, b.getSquare(2, getY())));
             m.add(castling);
         }
+         */
         
         return m;
     }

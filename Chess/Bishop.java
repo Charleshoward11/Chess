@@ -48,8 +48,8 @@ public class Bishop extends Piece
         // [+][ ][ ]
         // [ ][B][ ]
         // [ ][ ][ ]
-        h = h1;
-        v = v1;
+        h = h1 - 1;
+        v = v1 - 1;
         current = new ArrayList<Move>();
         while((h >= 0) && (v >= 0))
         {
@@ -62,8 +62,8 @@ public class Bishop extends Piece
         // [ ][ ][+]
         // [ ][B][ ]
         // [ ][ ][ ]
-        h = h1;
-        v = v1;
+        h = h1 + 1;
+        v = v1 - 1;
         current = new ArrayList<Move>();
         while((h <= 7) && (v >= 0))
         {
@@ -76,8 +76,8 @@ public class Bishop extends Piece
         // [ ][ ][ ]
         // [ ][B][ ]
         // [ ][ ][+]
-        h = h1;
-        v = v1;
+        h = h1 + 1;
+        v = v1 + 1;
         current = new ArrayList<Move>();
         while((h <= 7) && (v <= 7))
         {
@@ -90,8 +90,8 @@ public class Bishop extends Piece
         // [ ][ ][ ]
         // [ ][B][ ]
         // [+][ ][ ]
-        h = h1;
-        v = v1;
+        h = h1 - 1;
+        v = v1 + 1;
         current = new ArrayList<Move>();
         while((h >= 0) && (v <= 7))
         {

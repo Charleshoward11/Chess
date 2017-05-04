@@ -158,7 +158,7 @@ public class SquareActor extends DragAndDropActor
     {
         status = Status.SELFCHECK;
         
-        this.addAction(Actions.color(new Color(0.0f, 0.0f, 0.0f, 0), 0.1f));
+        this.addAction(Actions.color(new Color(0.2f, 0.2f, 0.2f, 1), 0.1f));
         
         return this;
     }

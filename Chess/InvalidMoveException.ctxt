@@ -1,0 +1,12 @@
+#BlueJ class context
+comment0.params=
+comment0.target=InvalidMoveException()
+comment1.params=message
+comment1.target=InvalidMoveException(java.lang.String)
+comment2.params=cause
+comment2.target=InvalidMoveException(java.lang.Throwable)
+comment3.params=
+comment3.target=java.lang.String\ toString()
+comment4.params=
+comment4.target=java.lang.String\ getMessage()
+numComments=5

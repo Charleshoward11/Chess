@@ -10,6 +10,11 @@ import java.util.*;
  */
 public class Rook extends Piece
 {
+    // Possibly two Square variables to store the King and this Rook's destination Squares in castling.
+    // Actually, I'm not sure if this'll work with the cloning...
+    private Square rookDestination;
+    private Square kingDestination;
+    
     public Rook(boolean isWhite, int x, int y)
     {
         super(isWhite, x, y);
@@ -37,14 +42,12 @@ public class Rook extends Piece
         
         int h, v;
         
-        
-        
         /* Adding moves in this direction:
          * [ ][ ][ ]
          * [+][R][ ]
          * [ ][ ][ ]
          */
-        h = h1; v = v1;
+        h = h1 - 1; v = v1;
         ArrayList<Move> current = new ArrayList<Move>();
         while(h >= 0)
         {
@@ -58,7 +61,7 @@ public class Rook extends Piece
          * [ ][R][ ]
          * [ ][ ][ ]
          */
-        h = h1; v = v1;
+        h = h1; v = v1 - 1;
         current = new ArrayList<Move>();
         while(v >= 0)
         {
@@ -72,7 +75,7 @@ public class Rook extends Piece
          * [ ][R][+]
          * [ ][ ][ ]
          */
-        h = h1; v = v1;
+        h = h1 + 1; v = v1;
         current = new ArrayList<Move>();
         while(h <= 7)
         {
@@ -86,7 +89,7 @@ public class Rook extends Piece
          * [ ][R][ ]
          * [ ][+][ ]
          */
-        h = h1; v = v1;
+        h = h1; v = v1 + 1;
         current = new ArrayList<Move>();
         while(v <= 7)
         {
@@ -95,6 +98,7 @@ public class Rook extends Piece
         }
         moves.add(current);
         
+        /*
         ArrayList<Move> castling = new ArrayList<Move>();
         if(!hasMoved())
         {
@@ -109,6 +113,7 @@ public class Rook extends Piece
         }
         
         moves.add(castling);
+         */
         
         return moves;
     }
@@ -125,5 +130,5 @@ public class Rook extends Piece
         }
     }
     
-    public boolean isRook(){return true;}
+    //public boolean isRook(){return true;}
 }

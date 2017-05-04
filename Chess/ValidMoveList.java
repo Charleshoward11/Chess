@@ -19,29 +19,31 @@ public class ValidMoveList
 {
     private ArrayList<Move> moves;
     private ArrayList<Move> captures;
+    private ArrayList<Move> castles;
     private ArrayList<Move> checks;
     private ArrayList<Move> checkmates;
     private ArrayList<Move> selfChecks;
-    private ArrayList<Move> castles;
     
     public ValidMoveList()
     {
         this.moves = new ArrayList<Move>();
         this.captures = new ArrayList<Move>();
+        this.castles = new ArrayList<Move>();
         this.checks = new ArrayList<Move>();
         this.checkmates = new ArrayList<Move>();
         this.selfChecks = new ArrayList<Move>();
-        this.castles = new ArrayList<Move>();
     }
     
-    public ValidMoveList(ArrayList<Move> moves, ArrayList<Move> captures, ArrayList<Move> checks, ArrayList<Move> checkmates, ArrayList<Move> selfChecks, ArrayList<Move> castles)
+    public ValidMoveList(ArrayList<Move> moves, ArrayList<Move> captures, ArrayList<Move> castles, ArrayList<Move> checks, ArrayList<Move> checkmates, ArrayList<Move> selfChecks)
     {
         this.moves = moves;
         this.captures = captures;
+        this.castles = castles;
         this.checks = checks;
         this.checkmates = checkmates;
         this.selfChecks = selfChecks;
-        this.castles = castles;
+        
+        this.removeDuplicates();
     }
     
     public ValidMoveList addMove(Move m)
@@ -53,6 +55,12 @@ public class ValidMoveList
     public ValidMoveList addCapture(Move m)
     {
         captures.add(m);
+        return this;
+    }
+    
+    public ValidMoveList addCastle(Move m)
+    {
+        castles.add(m);
         return this;
     }
     
@@ -74,15 +82,14 @@ public class ValidMoveList
         return this;
     }
     
-    public ValidMoveList addCastle(Move m)
-    {
-        castles.add(m);
-        return this;
-    }
-    
     public ArrayList<Move> getMoves()
     {
         return this.moves;
+    }
+    
+    public ArrayList<Move> getCastles()
+    {
+        return this.castles;
     }
     
     public ArrayList<Move> getCaptures()
@@ -105,22 +112,68 @@ public class ValidMoveList
         return this.selfChecks;
     }
     
-    public ArrayList<Move> getCastles()
-    {
-        return this.castles;
-    }
-    
     public ArrayList<Move> getAll()
     {
         ArrayList<Move> all = new ArrayList<Move>();
         
         all.addAll(this.moves);
         all.addAll(this.captures);
+        all.addAll(this.castles);
         all.addAll(this.checks);
         all.addAll(this.checkmates);
         all.addAll(this.selfChecks);
-        all.addAll(this.castles);
         
         return all;
+    }
+    
+    /**
+     * Removes all duplicates of moves in less "important" lists.
+     * 
+     * The hierarchy of importance is:
+     * selfChecks > checkmates > checks > castles > captures > moves
+     */
+    public ValidMoveList removeDuplicates()
+    {
+        for(Move m : selfChecks)
+        {
+            checkmates.remove(m);
+            checks.remove(m);
+            castles.remove(m);
+            captures.remove(m);
+            moves.remove(m);
+        }
+        
+        for(Move m : checkmates)
+        {
+            checks.remove(m);
+            castles.remove(m);
+            captures.remove(m);
+            moves.remove(m);
+        }
+        
+        for(Move m : checks)
+        {
+            castles.remove(m);
+            captures.remove(m);
+            moves.remove(m);
+        }
+        
+        for(Move m : castles)
+        {
+            captures.remove(m);
+            moves.remove(m);
+        }
+        
+        for(Move m : captures)
+        {
+            moves.remove(m);
+        }
+        
+        return this;
+    }
+    
+    public String toString()
+    {
+        return "No.";
     }
 }

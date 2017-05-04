@@ -103,8 +103,11 @@ public class DragAndDropActor extends BaseActor
         targetable = true;
         dropTarget = null;
         
+        ChessScreen screen = null;
+        
+        
         addListener(
-            new InputListener() 
+            new InputListener()
             {
                 public DragAndDropActor self;
                 public boolean touchDown(InputEvent event, float eventOffsetX, float eventOffsetY, int pointer, int button) 
@@ -129,17 +132,27 @@ public class DragAndDropActor extends BaseActor
                         PieceActor pi = (PieceActor)self;
                         
                         ValidMoveList moveList = board.getValidMoves(pi.piece, true);
+                        //moveList.removeDuplicates();
                         
+                        // The order of the loops below effectively determines
+                        // which types of moves are prioritized over others.
                         
-                
+                        // Moves
                         for(Move m : moveList.getMoves())
                         {
                             m.to.getActor().setMove();
                         }
                         
+                        // Captures
                         for(Move m : moveList.getCaptures())
                         {
                             m.to.getActor().setCapture();
+                        }
+                        
+                        // Castles
+                        for(Move m : moveList.getCastles())
+                        {
+                            m.to.getActor().setCastle();
                         }
                         
                         // Checks
@@ -149,14 +162,16 @@ public class DragAndDropActor extends BaseActor
                         }
                         
                         // Checkmates
+                        for(Move m : moveList.getCheckmates())
+                        {
+                            m.to.getActor().setCheckmate();
+                        }
                         
                         // Self-Checks
                         for(Move m : moveList.getSelfChecks())
                         {
                             m.to.getActor().setSelfCheck();
                         }
-                        
-                        // Castles
                     }
                     
                     self.addAction(Actions.scaleTo(1.25f, 1.25f, 0.1f));
@@ -189,7 +204,7 @@ public class DragAndDropActor extends BaseActor
                     // The table containing the SquareActors representing the squares on the board.
                     Table boardTable = null;
                     
-                    // Finds the table. Generally only iterates once.
+                    // Finding the table. Generally only iterates once.
                     for(Actor otherA : self.getStage().getActors())
                     {
                         if(otherA instanceof Table)
@@ -221,22 +236,66 @@ public class DragAndDropActor extends BaseActor
                     
                     SquareActor tar = (SquareActor)target;
                     
-                    if(tar != null && (tar.isMove() || tar.isCapture() || tar.isCheck()))
+                    if(tar != null)
                     {
-                        self.setDropTarget(target);
-                        PieceActor p = (PieceActor)self;
-                        
-                        if(tar.square.getPiece() != null)
+                        if(tar.isMove() || tar.isCapture() || tar.isCheck())
                         {
-                            tar.square.getPiece().getActor().addAction(Actions.sequence(
-                            Actions.fadeOut(0.05f), Actions.removeActor()));
+                            self.setDropTarget(target);
+                            PieceActor p = (PieceActor)self;
+                            
+                            if(tar.square.getPiece() != null)
+                            {
+                                tar.square.getPiece().getActor().addAction(Actions.sequence(
+                                Actions.fadeOut(0.05f), Actions.removeActor()));
+                            }
+                            Square prev = p.piece.getSquare();
+                            
+                            try
+                            {
+                                board.movePiece(p.piece, tar.square);
+                            }
+                            catch(InvalidMoveException e)
+                            {
+                                // I'll be in trouble if this happens.
+                            }
+                            
+                            prev.removePiece();
                         }
-                        Square prev = p.piece.getSquare();
-                        board.movePiece(p.piece, tar.square);
-                        prev.removePiece();
+                        else if(tar.isCastle())
+                        {
+                            
+                            
+                            self.setDropTarget(target);
+                            PieceActor p = (PieceActor)self;
+                            //Square prev = p.piece.getSquare();
+                            
+                            if(tar.square.x == 2)
+                            {
+                                try
+                                {
+                                    board.movePiece(new Move(board, p.piece, tar.square, (King)p.piece, (Rook)board.getPiece(0, p.piece.getSquare().y)));
+                                }
+                                catch(InvalidMoveException e)
+                                {
+                                }
+                            }
+                            else if(tar.square.x == 6)
+                            {
+                                try
+                                {
+                                    board.movePiece(new Move(board, p.piece, tar.square, (King)p.piece, (Rook)board.getPiece(7, p.piece.getSquare().y)));
+                                }
+                                catch(InvalidMoveException e)
+                                {
+                                }
+                            }
+                            
+                            //prev.removePiece();
+                            
+                        }
                     }
                     
-                    // This doesn't work. Not sure why. FIXED IT.
+                    // Returning the piece to its normal size.
                     self.addAction(Actions.scaleTo(1.00f, 1.00f, 0.1f));
                     
                     // Unhighlighting all the SquareActors. 

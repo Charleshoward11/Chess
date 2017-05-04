@@ -19,6 +19,7 @@ public class Queen extends Piece
     {
         Queen copy = new Queen(this.isWhite, this.getX(), this.getY());
         
+        // Effectively pointless.
         //copy.setMoved(this.hasMoved());
         
         return copy;
@@ -46,7 +47,7 @@ public class Queen extends Piece
         // [ ][ ][ ]
         // [+][Q][ ]
         // [ ][ ][ ]
-        h = h1;
+        h = h1 - 1;
         v = v1;
         current = new ArrayList<Move>();
         while(h >= 0)
@@ -60,7 +61,7 @@ public class Queen extends Piece
         // [ ][Q][ ]
         // [ ][ ][ ]
         h = h1;
-        v = v1;
+        v = v1 - 1;
         current = new ArrayList<Move>();
         while(v >= 0)
         {
@@ -72,7 +73,7 @@ public class Queen extends Piece
         // [ ][ ][ ]
         // [ ][Q][+]
         // [ ][ ][ ]
-        h = h1;
+        h = h1 + 1;
         v = v1;
         current = new ArrayList<Move>();
         while(h <= 7)
@@ -86,7 +87,7 @@ public class Queen extends Piece
         // [ ][Q][ ]
         // [ ][+][ ]
         h = h1;
-        v = v1;
+        v = v1 + 1;
         current = new ArrayList<Move>();
         while(v <= 7)
         {
@@ -99,8 +100,8 @@ public class Queen extends Piece
         // [+][ ][ ]
         // [ ][Q][ ]
         // [ ][ ][ ]
-        h = h1;
-        v = v1;
+        h = h1 - 1;
+        v = v1 - 1;
         current = new ArrayList<Move>();
         while((h >= 0) && (v >= 0))
         {
@@ -113,8 +114,8 @@ public class Queen extends Piece
         // [ ][ ][+]
         // [ ][Q][ ]
         // [ ][ ][ ]
-        h = h1;
-        v = v1;
+        h = h1 + 1;
+        v = v1 - 1;
         current = new ArrayList<Move>();
         while((h <= 7) && (v >= 0))
         {
@@ -127,8 +128,8 @@ public class Queen extends Piece
         // [ ][ ][ ]
         // [ ][Q][ ]
         // [ ][ ][+]
-        h = h1;
-        v = v1;
+        h = h1 + 1;
+        v = v1 + 1;
         current = new ArrayList<Move>();
         while((h <= 7) && (v <= 7))
         {
@@ -141,8 +142,8 @@ public class Queen extends Piece
         // [ ][ ][ ]
         // [ ][Q][ ]
         // [+][ ][ ]
-        h = h1;
-        v = v1;
+        h = h1 - 1;
+        v = v1 + 1;
         current = new ArrayList<Move>();
         while((h >= 0) && (v <= 7))
         {

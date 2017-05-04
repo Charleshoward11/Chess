@@ -25,34 +25,34 @@ public class PieceActor extends DragAndDropActor
         
         piece = p.setActor(this);
         
-        if(p.isWhite)
+        if(piece.isWhite)
         {
-            if(p.isPawn())
+            if(piece instanceof Pawn)
                 loadTexture("assets/Pawn-White.png");
-            else if(p.isBishop())
+            else if(piece instanceof Bishop)
                 loadTexture("assets/Bishop-White.png");
-            else if(p.isKnight())
+            else if(piece instanceof Knight)
                 loadTexture("assets/Knight-White.png");
-            else if(p.isRook())
+            else if(piece instanceof Rook)
                 loadTexture("assets/Rook-White.png");
-            else if(p.isQueen())
+            else if(piece instanceof Queen)
                 loadTexture("assets/Queen-White.png");
-            else if(p.isKing())
+            else if(piece instanceof King)
                 loadTexture("assets/King-White.png");
         }
         else
         {
-            if(p.isPawn())
+            if(piece instanceof Pawn)
                 loadTexture("assets/Pawn-Black.png");
-            else if(p.isBishop())
+            else if(piece instanceof Bishop)
                 loadTexture("assets/Bishop-Black.png");
-            else if(p.isKnight())
+            else if(piece instanceof Knight)
                 loadTexture("assets/Knight-Black.png");
-            else if(p.isRook())
+            else if(piece instanceof Rook)
                 loadTexture("assets/Rook-Black.png");
-            else if(p.isQueen())
+            else if(piece instanceof Queen)
                 loadTexture("assets/Queen-Black.png");
-            else if(p.isKing())
+            else if(piece instanceof King)
                 loadTexture("assets/King-Black.png");
         }
         
@@ -78,21 +78,21 @@ public class PieceActor extends DragAndDropActor
         // ranges from 0 to 1
         float percent = 4 * scale - 4;
         
-        batch.draw( animation.getKeyFrame(elapsedTime), 
+        batch.draw(animation.getKeyFrame(elapsedTime), 
             getX() + 10 * percent, getY() - 10 * percent, getOriginX(), getOriginY(),
-            getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation() );
+            getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
 
-        super.draw( batch, parentAlpha );
+        super.draw(batch, parentAlpha);
 
         /*
         Color c = getColor(); // used to apply tint color effect
 
         batch.setColor(c.r, c.g, c.b, c.a);
 
-        if ( animation != null && isVisible() )
-        batch.draw( animation.getKeyFrame(elapsedTime), 
+        if (animation != null && isVisible())
+        batch.draw(animation.getKeyFrame(elapsedTime), 
         getX(), getY(), getOriginX(), getOriginY(),
-        getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation() );
+        getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
          */
     }
     

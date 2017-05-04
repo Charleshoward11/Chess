@@ -54,12 +54,12 @@ public class ChessScreen extends BaseScreen
         }
         
         
-        for(Piece p : board.getWhitePieces())
+        for(Piece p : board.getPieces(true))
         {
             p.setActor(new PieceActor(p, mainStage));
         }
         
-        for(Piece p : board.getBlackPieces())
+        for(Piece p : board.getPieces(false))
         {
             p.setActor(new PieceActor(p, mainStage));
         }
@@ -113,10 +113,11 @@ public class ChessScreen extends BaseScreen
                 c.moveToActor(c.piece.getSquare().getActor());
                 
                 // Should I remove captured pieces here?
-                if(!(board.getWhitePieces().contains(c.piece) || board.getBlackPieces().contains(c.piece)))
+                if(!(board.getAllPieces().contains(c.piece)))
                 {
-                    //c.remove();
+                    c.remove();
                 }
+                
                 
                 //c.alignToActorCenter(c.piece.getSquare().getActor());
             }

@@ -160,10 +160,12 @@ public abstract class Piece implements Cloneable
     public abstract String toString();
     
     // Each piece overloads one of these methods.
-    public boolean isKing(){return false;}
-    public boolean isRook(){return false;}
-    public boolean isPawn(){return false;}
-    public boolean isQueen(){return false;}
-    public boolean isBishop(){return false;}
-    public boolean isKnight(){return false;}
+    // Clever, but ultimately unnecessary.
+    // I didn't know about instanceof when I started this.
+    //public boolean isKing(){return false;}
+    //public boolean isRook(){return false;}
+    //public boolean isPawn(){return false;}
+    //public boolean isQueen(){return false;}
+    //public boolean isBishop(){return false;}
+    //public boolean isKnight(){return false;}
 }
