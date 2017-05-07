@@ -131,6 +131,9 @@ public class DragAndDropActor extends BaseActor
                     {
                         PieceActor pi = (PieceActor)self;
                         
+                        if(pi.piece.isWhite != board.isWhoseTurn())
+                            return false;
+                        
                         ValidMoveList moveList = board.getValidMoves(pi.piece, true);
                         //moveList.removeDuplicates();
                         
@@ -172,6 +175,8 @@ public class DragAndDropActor extends BaseActor
                         {
                             m.to.getActor().setSelfCheck();
                         }
+                        
+                        // Stalemate
                     }
                     
                     self.addAction(Actions.scaleTo(1.25f, 1.25f, 0.1f));

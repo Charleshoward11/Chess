@@ -25,6 +25,8 @@ public class ChessScreen extends BaseScreen
     Board board;
     Table boardTable;
     
+    boolean playerIsWhite;
+    
     public ChessScreen()
     {
         super();
@@ -117,7 +119,6 @@ public class ChessScreen extends BaseScreen
                 {
                     c.remove();
                 }
-                
                 
                 //c.alignToActorCenter(c.piece.getSquare().getActor());
             }

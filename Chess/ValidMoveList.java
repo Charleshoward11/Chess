@@ -23,6 +23,7 @@ public class ValidMoveList
     private ArrayList<Move> checks;
     private ArrayList<Move> checkmates;
     private ArrayList<Move> selfChecks;
+    private ArrayList<Move> stalemates;
     
     public ValidMoveList()
     {
@@ -32,9 +33,16 @@ public class ValidMoveList
         this.checks = new ArrayList<Move>();
         this.checkmates = new ArrayList<Move>();
         this.selfChecks = new ArrayList<Move>();
+        this.stalemates = new ArrayList<Move>();
     }
     
-    public ValidMoveList(ArrayList<Move> moves, ArrayList<Move> captures, ArrayList<Move> castles, ArrayList<Move> checks, ArrayList<Move> checkmates, ArrayList<Move> selfChecks)
+    public ValidMoveList(ArrayList<Move> moves, 
+                         ArrayList<Move> captures, 
+                         ArrayList<Move> castles, 
+                         ArrayList<Move> checks, 
+                         ArrayList<Move> checkmates, 
+                         ArrayList<Move> selfChecks,
+                         ArrayList<Move> stalemates)
     {
         this.moves = moves;
         this.captures = captures;
@@ -42,43 +50,50 @@ public class ValidMoveList
         this.checks = checks;
         this.checkmates = checkmates;
         this.selfChecks = selfChecks;
+        this.stalemates = stalemates;
         
         this.removeDuplicates();
     }
     
     public ValidMoveList addMove(Move m)
     {
-        moves.add(m);
+        this.moves.add(m);
         return this;
     }
     
     public ValidMoveList addCapture(Move m)
     {
-        captures.add(m);
+        this.captures.add(m);
         return this;
     }
     
     public ValidMoveList addCastle(Move m)
     {
-        castles.add(m);
+        this.castles.add(m);
         return this;
     }
     
     public ValidMoveList addCheck(Move m)
     {
-        checks.add(m);
+        this.checks.add(m);
         return this;
     }
     
     public ValidMoveList addCheckmate(Move m)
     {
-        checkmates.add(m);
+        this.checkmates.add(m);
         return this;
     }
     
     public ValidMoveList addSelfCheck(Move m)
     {
-        selfChecks.add(m);
+        this.selfChecks.add(m);
+        return this;
+    }
+    
+    public ValidMoveList addStalemate(Move m)
+    {
+        this.stalemates.add(m);
         return this;
     }
     
@@ -112,6 +127,11 @@ public class ValidMoveList
         return this.selfChecks;
     }
     
+    public ArrayList<Move> getStalemates()
+    {
+        return this.stalemates;
+    }
+    
     public ArrayList<Move> getAll()
     {
         ArrayList<Move> all = new ArrayList<Move>();
@@ -122,19 +142,43 @@ public class ValidMoveList
         all.addAll(this.checks);
         all.addAll(this.checkmates);
         all.addAll(this.selfChecks);
+        all.addAll(this.stalemates);
         
         return all;
+    }
+    
+    public ValidMoveList combineWith(ValidMoveList other)
+    {
+        this.moves.addAll(other.getMoves());
+        this.captures.addAll(other.getCaptures());
+        this.castles.addAll(other.getCastles());
+        this.checks.addAll(other.getChecks());
+        this.checkmates.addAll(other.getCheckmates());
+        this.selfChecks.addAll(other.getSelfChecks());
+        this.stalemates.addAll(other.getStalemates());
+        
+        return this;
     }
     
     /**
      * Removes all duplicates of moves in less "important" lists.
      * 
      * The hierarchy of importance is:
-     * selfChecks > checkmates > checks > castles > captures > moves
+     * selfChecks > staleMates > checkmates > checks > castles > captures > moves
      */
     public ValidMoveList removeDuplicates()
     {
         for(Move m : selfChecks)
+        {
+            stalemates.remove(m);
+            checkmates.remove(m);
+            checks.remove(m);
+            castles.remove(m);
+            captures.remove(m);
+            moves.remove(m);
+        }
+        
+        for(Move m : stalemates)
         {
             checkmates.remove(m);
             checks.remove(m);
@@ -174,6 +218,6 @@ public class ValidMoveList
     
     public String toString()
     {
-        return "No.";
+        return "I'd really rather not.";
     }
 }
