@@ -17,7 +17,7 @@ import com.badlogic.gdx.utils.viewport.*;
  */
 public class PieceActor extends DragAndDropActor
 {
-    public final Piece piece;
+    public Piece piece;
     
     public PieceActor(Piece p, Stage s)
     {
@@ -94,6 +94,22 @@ public class PieceActor extends DragAndDropActor
         getX(), getY(), getOriginX(), getOriginY(),
         getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
          */
+    }
+    
+    public void pawnToQueen(Queen q)
+    {
+        if(!(this.piece instanceof Pawn))
+        {
+            return;
+        }
+        
+        this.piece = q;
+        q.setActor(this);
+        
+        if(piece.isWhite)
+            this.setAnimation(loadTexture("assets/Queen-White.png"));
+        else
+            this.setAnimation(loadTexture("assets/Queen-Black.png"));
     }
     
     public void act(float dt)

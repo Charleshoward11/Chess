@@ -134,7 +134,7 @@ public class DragAndDropActor extends BaseActor
                         if(pi.piece.isWhite != board.isWhoseTurn())
                             return false;
                         
-                        ValidMoveList moveList = board.getValidMoves(pi.piece, true);
+                        ValidMoveList moveList = board.getValidMoves(pi.piece);
                         //moveList.removeDuplicates();
                         
                         // The order of the loops below effectively determines
@@ -177,6 +177,10 @@ public class DragAndDropActor extends BaseActor
                         }
                         
                         // Stalemate
+                        for(Move m : moveList.getStalemates())
+                        {
+                            m.to.getActor().setStalemate();
+                        }
                     }
                     
                     self.addAction(Actions.scaleTo(1.25f, 1.25f, 0.1f));
@@ -243,7 +247,7 @@ public class DragAndDropActor extends BaseActor
                     
                     if(tar != null)
                     {
-                        if(tar.isMove() || tar.isCapture() || tar.isCheck())
+                        if(tar.isMove() || tar.isCapture() || tar.isCheck() || tar.isCheckmate() || tar.isStalemate())
                         {
                             self.setDropTarget(target);
                             PieceActor p = (PieceActor)self;
@@ -264,12 +268,15 @@ public class DragAndDropActor extends BaseActor
                                 // I'll be in trouble if this happens.
                             }
                             
+                            if(tar.isCheckmate())
+                                board.checkmate = true;
+                            else if(tar.isStalemate())
+                                board.stalemate = true;
+                            
                             prev.removePiece();
                         }
                         else if(tar.isCastle())
                         {
-                            
-                            
                             self.setDropTarget(target);
                             PieceActor p = (PieceActor)self;
                             //Square prev = p.piece.getSquare();

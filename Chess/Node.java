@@ -9,12 +9,13 @@ import java.util.ArrayList;
 public class Node
 {
     // I figured this would be the best place to put these, to make them easily tweakable.
+    public static int movePoints =      1;
     public static int pawnPoints =      1;
     public static int bishopPoints =    3;
     public static int knightPoints =    3;
     public static int rookPoints =      5;
     public static int queenPoints =     10;
-    public static int checkPoints =     30;
+    public static int checkPoints =     8;
     public static int checkMatePoints = 1000000;
     
     
@@ -23,7 +24,6 @@ public class Node
     
     // Whether this is a move by a white piece or not.
     public boolean isWhite;
-    
     
     // Points for the entire tree of moves.
     public int totalPoints;
@@ -39,13 +39,13 @@ public class Node
      * @param   b       The board this node is being made for.
      * @param   capture Whether this particular move is a capture or not.
      */
-    public Node(int layer, Move m, Board b, boolean capture)
+    public Node(int layer, Move m, Board b, boolean capture, boolean isWhite)
     {
         this.move = m;
         
         if(layer > 0)
         {
-            //ValidMoveList
+            ValidMoveList v 
         }
     }
     

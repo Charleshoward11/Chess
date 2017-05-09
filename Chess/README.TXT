@@ -6,4 +6,10 @@ the player should only be able to castle by dragging the King.
 I'm starting to think that I might not be able to have checkmate/stalemate indications in the move previews.
 It creates a recursive mess.
 
-THERE'S AN ISSUE WITH THE CASTLING. IT THINKS THE PIECES STAY IN THEIR SPOTS. ALSO, A NULLPOINTEREXCEPTION.
+I think the StackOverflowError is caused when you click on a piece that could move to create a situation where both players could castle.
+The infinite loop is occuring somewhere among the getValidMoves, isInCheck, and canCastle methods.
+
+Giving the player a choice would be too much work, so I'll just automatically give them a queen.
+
+
+NOTE: It's entirely possible that this version of the project is outdated. [Give the URL for the Github location]

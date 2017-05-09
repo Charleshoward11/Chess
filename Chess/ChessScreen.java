@@ -27,6 +27,9 @@ public class ChessScreen extends BaseScreen
     
     boolean playerIsWhite;
     
+    BaseActor checkmateText;
+    BaseActor stalemateText;
+    
     public ChessScreen()
     {
         super();
@@ -82,6 +85,18 @@ public class ChessScreen extends BaseScreen
                 p.alignToActorCenter(s);
             }
         }
+        
+        checkmateText = new BaseActor(0,0, uiStage);
+        checkmateText.loadTexture("assets/Checkmate2.png");
+        checkmateText.alignToActorCenter(uiTable);
+        checkmateText.toFront();
+        checkmateText.setVisible(false);
+        
+        stalemateText = new BaseActor(0,0, uiStage);
+        stalemateText.loadTexture("assets/Stalemate2.png");
+        stalemateText.alignToActorCenter(uiTable);
+        stalemateText.toFront();
+        stalemateText.setVisible(false);
     }
     
     public void update(float dt) 
@@ -124,6 +139,15 @@ public class ChessScreen extends BaseScreen
             }
             
             dropped.setDropped(false);
+            
+            if(board.checkmate)
+            {
+                checkmateText.setVisible(true);
+            }
+            else if(board.stalemate)
+            {
+                stalemateText.setVisible(true);
+            }
         }
     }
     

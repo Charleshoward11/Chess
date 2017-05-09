@@ -37,6 +37,11 @@ public class Board implements Serializable//, Cloneable
     
     public boolean isClone = false;
     
+    ChessScreen screen;
+    
+    public boolean checkmate;
+    public boolean stalemate;
+    
     // If I'm going to have en passant capabilities, 
     // there should probably be a variable here that stores a pawn that just double moved
     
@@ -60,6 +65,9 @@ public class Board implements Serializable//, Cloneable
         // loop on each list to place the pieces on the board.
         
         whoseTurn = true;
+        
+        checkmate = false;
+        stalemate = false;
         
         // Black pieces
         blackPieces = new ArrayList<Piece>();
@@ -162,36 +170,9 @@ public class Board implements Serializable//, Cloneable
     }
     
     /**
-     * Prints out a text representation of the board to the console.
-     * Used for testing.
-     */
-    public void printBoard()
-    {
-        System.out.println(" +--0-+--1-+--2-+--3-+--4-+--5-+--6-+--7-+");
-        
-        for(int y = 0; y < 8; y++)
-        {
-            System.out.print(" " + y);
-            
-            for(int x = 0; x < 8; x++)
-            {
-                System.out.print(board[x][y]);
-                if(x < 7)
-                    System.out.print("|");
-            }
-            
-            System.out.println(y);
-            if(y < 7)
-                System.out.println(" +----+----+----+----+----+----+----+----+");
-        }
-        
-        System.out.println(" +--0-+--1-+--2-+--3-+--4-+--5-+--6-+--7-+");
-    }
-    
-    /**
      * Requests a piece's moveset, then does a second pass on it to apply it to the board's current state.
      */
-    public ValidMoveList getValidMoves(Piece p, boolean getChecks)
+    public ValidMoveList getValidMoves(Piece p, boolean getChecks, boolean getCastles, boolean getMates)
     {
         ArrayList<Move> moves = new ArrayList<Move>();
         ArrayList<Move> captures = new ArrayList<Move>();
@@ -282,7 +263,7 @@ public class Board implements Serializable//, Cloneable
         }
         
         // Castling is complex enough to require several of its own methods.
-        if(!p.hasMoved() && p instanceof King)
+        if(!p.hasMoved() && p instanceof King && getCastles)
         {
             // I am SO GLAD that I learned about casting.
             King k = (King)p;
@@ -304,19 +285,30 @@ public class Board implements Serializable//, Cloneable
             mm.addAll(castles);
             
             for(Move m : mm)
-                // Do mates here?
+            {
                 if(wouldCauseCheck(m, !p.isWhite))
                 {
-                    //moves.remove(m);
                     selfChecks.add(m);
                 }
                 else if(wouldCauseCheck(m, p.isWhite))
                 {
-                    //moves.remove(m);
                     checks.add(m);
                 }
-            
-            // Or do mates here?
+                
+                if(getMates)
+                {
+                    int mate = wouldCauseMate(m, p.isWhite);
+                    
+                    if(mate == 1)
+                    {
+                        checkmates.add(m);
+                    }
+                    else if(mate == -1)
+                    {
+                        stalemates.add(m);
+                    }
+                }
+            }
         }
         
         ValidMoveList processedMoves = new ValidMoveList(moves, captures, castles, checks, checkmates, selfChecks, stalemates);
@@ -327,17 +319,17 @@ public class Board implements Serializable//, Cloneable
     
     public ValidMoveList getValidMoves(Piece p)
     {
-        return getValidMoves(p, true);
+        return getValidMoves(p, true, true, true);
     }
     
     public ValidMoveList getValidMoves(Square s)
     {
-        return getValidMoves(s.getPiece(), true);
+        return getValidMoves(s.getPiece(), true, true, true);
     }
     
     public ValidMoveList getValidMoves(int x, int y)
     {
-        return getValidMoves(board[x][y].getPiece(), true);
+        return getValidMoves(board[x][y].getPiece(), true, true, true);
     }
     
     /**
@@ -346,13 +338,13 @@ public class Board implements Serializable//, Cloneable
      * @param isWhite   Whether the player is black or white.
      * @return          ValidMoveList containing all of that player's possible moves.
      */
-    public ValidMoveList getAllValidMoves(boolean isWhite)
+    public ValidMoveList getAllValidMoves(boolean isWhite, boolean getChecks, boolean getCastles, boolean getMates)
     {
         ValidMoveList allValidMoves = new ValidMoveList();
         
         for(Piece p : this.getPieces(isWhite))
         {
-            allValidMoves.combineWith(this.getValidMoves(p));
+            allValidMoves.combineWith(this.getValidMoves(p, getChecks, getCastles, getMates));
         }
         
         return allValidMoves;
@@ -411,20 +403,31 @@ public class Board implements Serializable//, Cloneable
             throw new InvalidMoveException("There is no piece on Square " + m.getFrom().x + "," + m.getFrom().y + ".");
         else if(t != null)
             if(t.isWhite == f.isWhite) // If there's a piece on the TO space that's the same color, I.E. trying to take your own piece.
-            {
                 throw new InvalidMoveException("Cannot capture Piece " + t + " with Piece " + f + ", as they are the same color.");
-            }
             else // Dealing with the capturing of the piece.
-            {
-                if(t.isWhite) // Removing the piece from its ArrayList.
-                    this.whitePieces.remove(t);
-                else
-                    this.blackPieces.remove(t);
-            }
-        
+                this.removePiece(t);
         
         m.getFrom().removePiece();
         f.setSquare(m.getTo());
+        
+        // Giving the player a choice would be too much work, so I'll just automatically give them a queen.
+        if(f instanceof Pawn)
+        {
+            if((f.isWhite && f.getY() == 0) || (!f.isWhite && f.getY() == 7))
+            {
+                Queen q = new Queen(f.isWhite, f.getX(),f.getY());
+                
+                this.addPiece(q);
+                
+                if(f.getActor() != null)
+                {
+                    f.getActor().pawnToQueen(q);
+                }
+                
+                this.removePiece(f);
+                this.placePiece(q);
+            }
+        }
         
         // I could change the whoseTurn variable here.
         this.whoseTurn = !this.whoseTurn;
@@ -480,7 +483,7 @@ public class Board implements Serializable//, Cloneable
     {
         for(Piece p : this.getPieces(!k.isWhite))
         {
-            ValidMoveList ml = this.getValidMoves(p, false);
+            ValidMoveList ml = this.getValidMoves(p, false, false, false);
             
             for(Move c : ml.getCaptures())
                 if(c.getTo().x == k.getX() && c.getTo().y == k.getY())
@@ -521,6 +524,9 @@ public class Board implements Serializable//, Cloneable
     /**
      * Figures out if the given player is in checkmate or stalemate.
      * 
+     * I thought that this would be a lot more difficult, but thanks to a trick involving the SelfChecks,
+     * it ended up being pretty simple.
+     * 
      * @param isWhite    Whether the player is black or white.
      * @return           1 if Checkmate
      * @return          -1 if Stalemate.
@@ -531,27 +537,13 @@ public class Board implements Serializable//, Cloneable
         // Not sure I need this here. I've got enough decomposition that I might not.
         King k = this.getKing(isWhite);
         
-        // True if the player is currently in check.
-        boolean check = false;
-        
-        // True if the player has no moves that won't RESULT in check.
-        boolean mate = true;
+        ValidMoveList v = this.getAllValidMoves(isWhite, true, true, false);
         
         // If it's not in check, it obviously can't be in checkmate.
-        check = this.isInCheck(k);
+        boolean check = this.isInCheck(k);
         
-        // Gotta get getAllMoves() working.
-        // If I use a break as soon as it finds a "safe" move,
-        // that might make it more efficient.
-        for(Move m : this.getAllValidMoves(isWhite).getAll())
-        {
-            if(!this.wouldCauseCheck(m, isWhite))
-            {
-                mate = false;
-                break;
-            }
-        }
-        
+        // True if the player has no moves that won't RESULT in check.
+        boolean mate = v.getAll().size() == v.getSelfChecks().size();
         
         if(check && mate)
             return 1;
@@ -565,8 +557,6 @@ public class Board implements Serializable//, Cloneable
     {
         Board copyBoard = this.clone();
         
-        //King k = copyBoard.getKing(!isWhite);
-        
         Move cm = copyBoard.cloneMove(m);
         
         try
@@ -578,7 +568,7 @@ public class Board implements Serializable//, Cloneable
             return 0;
         }
         
-        return copyBoard.isMate(isWhite);
+        return copyBoard.isMate(!isWhite);
     }
     
     public boolean canCastle(King k, Rook r)
@@ -651,6 +641,24 @@ public class Board implements Serializable//, Cloneable
         return false;
     }
     
+    public void addPiece(Piece p)
+    {
+        if(p.isWhite)
+            this.whitePieces.add(p);
+        else
+            this.blackPieces.add(p);
+    }
+    
+    public void removePiece(Piece p)
+    {
+        if(p.isWhite)
+            this.whitePieces.remove(p);
+        else
+            this.blackPieces.remove(p);
+        
+        p.getSquare().removePiece();
+    }
+    
     /**
      * Combined version of two older methods, getWhitePieces() and getBlackPieces().
      * 
@@ -673,8 +681,8 @@ public class Board implements Serializable//, Cloneable
     public ArrayList<Piece> getAllPieces()
     {
         ArrayList<Piece> allPieces = new ArrayList<Piece>();
-        allPieces.addAll(whitePieces);
-        allPieces.addAll(blackPieces);
+        allPieces.addAll(this.whitePieces);
+        allPieces.addAll(this.blackPieces);
         
         return allPieces;
     }
@@ -720,5 +728,32 @@ public class Board implements Serializable//, Cloneable
     public boolean isWhoseTurn()
     {
         return whoseTurn;
+    }
+    
+    /**
+     * Prints out a text representation of the board to the console.
+     * Used for testing.
+     */
+    public void printBoard()
+    {
+        System.out.println(" +--0-+--1-+--2-+--3-+--4-+--5-+--6-+--7-+");
+        
+        for(int y = 0; y < 8; y++)
+        {
+            System.out.print(" " + y);
+            
+            for(int x = 0; x < 8; x++)
+            {
+                System.out.print(board[x][y]);
+                if(x < 7)
+                    System.out.print("|");
+            }
+            
+            System.out.println(y);
+            if(y < 7)
+                System.out.println(" +----+----+----+----+----+----+----+----+");
+        }
+        
+        System.out.println(" +--0-+--1-+--2-+--3-+--4-+--5-+--6-+--7-+");
     }
 }

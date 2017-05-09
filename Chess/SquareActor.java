@@ -31,10 +31,11 @@ public class SquareActor extends DragAndDropActor
      * Checkmate is gold?
      * Self-check is black
      * Castle is blue
+     * Stalemate is brown
      */
     private enum Status 
     {
-        BLANK, MOVE, CAPTURE, CHECK, CHECKMATE, SELFCHECK, CASTLE
+        BLANK, MOVE, CAPTURE, CHECK, CHECKMATE, SELFCHECK, CASTLE, STALEMATE
     }
     
     private Status status;
@@ -104,6 +105,11 @@ public class SquareActor extends DragAndDropActor
         return status == Status.CASTLE;
     }
     
+    public boolean isStalemate()
+    {
+        return status == Status.STALEMATE;
+    }
+    
     public Status getStatus()
     {
         return this.status;
@@ -113,7 +119,7 @@ public class SquareActor extends DragAndDropActor
     {
         status = Status.BLANK;
         
-        this.addAction(Actions.color(new Color(1.0f, 1.0f, 1.0f, 1), 0.1f));
+        this.addAction(Actions.color(Color.WHITE, 0.1f));
         
         return this;
     }
@@ -122,7 +128,9 @@ public class SquareActor extends DragAndDropActor
     {
         status = Status.MOVE;
         
-        this.addAction(Actions.color(new Color(1.0f, 0.0f, 0.0f, 1), 0.1f));
+        this.addAction(Actions.color(Color.RED, 0.1f));
+        
+        //this.addAction(Actions.color(Color.FOREST, 0.1f));
         
         return this;
     }
@@ -131,7 +139,7 @@ public class SquareActor extends DragAndDropActor
     {
         status = Status.CAPTURE;
         
-        this.addAction(Actions.color(new Color(0.0f, 1.0f, 0.0f, 1), 0.1f));
+        this.addAction(Actions.color(Color.MAROON, 0.1f));
         
         return this;
     }
@@ -140,7 +148,7 @@ public class SquareActor extends DragAndDropActor
     {
         status = Status.CHECK;
         
-        this.addAction(Actions.color(new Color(0.0f, 1.0f, 1.0f, 1), 0.1f));
+        this.addAction(Actions.color(Color.FOREST, 0.1f));
         
         return this;
     }
@@ -149,7 +157,7 @@ public class SquareActor extends DragAndDropActor
     {
         status = Status.CHECKMATE;
         
-        this.addAction(Actions.color(new Color(1.0f, 0.5f, 0.0f, 1), 0.1f));
+        this.addAction(Actions.color(Color.GOLDENROD, 0.1f));
         
         return this;
     }
@@ -158,7 +166,7 @@ public class SquareActor extends DragAndDropActor
     {
         status = Status.SELFCHECK;
         
-        this.addAction(Actions.color(new Color(0.2f, 0.2f, 0.2f, 1), 0.1f));
+        this.addAction(Actions.color(Color.LIGHT_GRAY, 0.1f));
         
         return this;
     }
@@ -167,7 +175,16 @@ public class SquareActor extends DragAndDropActor
     {
         status = Status.CASTLE;
         
-        this.addAction(Actions.color(new Color(0.0f, 0.0f, 1.0f, 1), 0.1f));
+        this.addAction(Actions.color(Color.BLUE, 0.1f));
+        
+        return this;
+    }
+    
+    public SquareActor setStalemate()
+    {
+        status = Status.STALEMATE;
+        
+        this.addAction(Actions.color(Color.BROWN, 0.1f));
         
         return this;
     }

@@ -539,7 +539,7 @@ public class BaseActor extends Group
      *  with center of other BaseActor. Useful when one BaseActor spawns another.
      *  @param other BaseActor to align this BaseActor with
      */
-    public void alignToActorCenter(BaseActor other)
+    public void alignToActorCenter(Actor other)
     {
         this.setX(other.getX() + other.getWidth()/2 - this.getWidth()/2);
         this.setY(other.getY() + other.getHeight()/2 - this.getHeight()/2);

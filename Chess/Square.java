@@ -49,10 +49,10 @@ public class Square implements Serializable
     
     public boolean hasPiece()
     {
-        if (this.currentPiece == null)
-            return false;
+        if(this.currentPiece != null)
+            return true;
         
-        return true;
+        return false;
     }
     
     /**
