@@ -12,4 +12,4 @@ The infinite loop is occuring somewhere among the getValidMoves, isInCheck, and 
 Giving the player a choice would be too much work, so I'll just automatically give them a queen.
 
 
-NOTE: It's entirely possible that this version of the project is outdated. [Give the URL for the Github location]
+NOTE: It's entirely possible that this version of the project is outdated, so check https://github.com/Charleshoward11/Chess.git
