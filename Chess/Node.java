@@ -8,6 +8,8 @@ import java.util.ArrayList;
  */
 public class Node
 {
+    public static int nodeNum = 0;
+    
     // Whether this is a move by a white piece or not.
     public boolean isWhite;
     
@@ -23,9 +25,13 @@ public class Node
      * @param   layer   How many more moves to look ahead.
      * @param   m       The move.
      * @param   b       The board this node is being made for.
+     * @param   bP      Base Points
      */
     public Node(Move mv, Board b, int layer, int bP, boolean aiIsWhite)
     {
+        nodeNum++;
+        System.out.println("Creating node #" + nodeNum + " on layer #" + layer + "...");
+        
         this.move = mv;
         
         this.basePoints = basePoints;
@@ -87,12 +93,14 @@ public class Node
                 this.moveTree.add(n);
             }
             
+            /*
             for(Move m : nextMoves.getSelfChecks())
             {
                 Node n = new Node(m, this.moveResult, 0, ChessAI.selfCheckPoints*mod, aiIsWhite);
                 //this.totalPoints += n.getPoints();
                 this.moveTree.add(n);
             }
+             */
             
             for(Move m : nextMoves.getCheckmates())
             {

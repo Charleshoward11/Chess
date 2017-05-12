@@ -105,7 +105,7 @@ public class ChessScreenVsAI extends BaseScreen
         gameOver = false;
         
         // Create the AI
-        chester = new ChessAI(3, !playerIsWhite, board);
+        chester = new ChessAI(2, !playerIsWhite, board);
     }
     
     public void update(float dt) 

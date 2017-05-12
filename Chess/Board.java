@@ -405,11 +405,15 @@ public class Board implements Serializable//, Cloneable
      * 
      * @return          true if successful (possibly unnecessary?).
      */
-    public boolean movePiece(Move m)
+    public void movePiece(Move m)
     throws InvalidMoveException
     {
         if(m.castlingKing != null && m.castlingRook != null)
-            return castle(m.castlingKing, m.castlingRook);
+        {
+            castle(m.castlingKing, m.castlingRook);
+            this.whoseTurn = !this.whoseTurn;
+            return;
+        }
         
         Piece f = m.getPiece();
         Piece t = m.to.getPiece();
@@ -456,28 +460,25 @@ public class Board implements Serializable//, Cloneable
         
         // If I put in En Passant, I should clear it here.
         this.enPassant = null;
-        
-        //return placePiece(p);
-        return true;
     }
     
     // Do I actually use any of these methods?
-    public boolean movePiece(int fX, int fY, int tX, int tY)
+    public void movePiece(int fX, int fY, int tX, int tY)
     throws InvalidMoveException
     {
-        return movePiece(new Move(this, fX,fY, tX,tY));
+        movePiece(new Move(this, fX,fY, tX,tY));
     }
     
-    public boolean movePiece(Square from, Square to)
+    public void movePiece(Square from, Square to)
     throws InvalidMoveException
     {
-        return movePiece(new Move(from, to));
+        movePiece(new Move(from, to));
     }
     
-    public boolean movePiece(Piece p, Square target)
+    public void movePiece(Piece p, Square target)
     throws InvalidMoveException
     {
-        return movePiece(p.getSquare(), target);
+        movePiece(p.getSquare(), target);
     }
     
     /**
@@ -558,6 +559,56 @@ public class Board implements Serializable//, Cloneable
         }
         
         return copy.isInCheck(copy.getKing(!isWhite));
+    }
+    
+    /**
+     * Hopefully I can make this more efficient.
+     */
+    public boolean wouldCauseCheckNEW(Move m, boolean isWhite)
+    {
+        // Need to account for Castling? Actually, maybe not.
+        /*
+        if(m.castlingKing != null && m.castlingRook != null)
+        {
+            King k = m.castlingKing;
+            Rook r = m.castlingRook;
+            
+            Square kOrigin = k.getSquare();
+            Square rOrigin = r.getSquare();
+            
+            castle(k,r);
+        }
+         */
+        
+        // Piece that would be hypothetically be captured.
+        Piece c = m.to.getPiece();
+        boolean cMoved = true;
+        if(c != null)
+            cMoved = c.hasMoved();
+        m.to.removePiece();
+        
+        // The Piece that's moving.
+        Piece p = m.from.getPiece();
+        boolean pMoved = p.hasMoved();
+        
+        // Making the hypothetical move.
+        m.to.setPiece(m.from.getPiece());
+        m.from.removePiece();
+        
+        // Checking for check.
+        boolean check = this.isInCheck(this.getKing(!isWhite));
+        
+        // Undoing the hypothetical move.
+        m.to.removePiece();
+        m.from.setPiece(p);
+        p.setMoved(pMoved);
+        if(c != null)
+        {
+            m.to.setPiece(c);
+            c.setMoved(cMoved);
+        }
+        
+        return check;
     }
     
     /**
@@ -663,7 +714,7 @@ public class Board implements Serializable//, Cloneable
             movePiece(k, this.board[2][k.getSquare().y]);
             movePiece(r, this.board[3][k.getSquare().y]);
             
-            this.whoseTurn = !this.whoseTurn;
+            //this.whoseTurn = !this.whoseTurn;
             return true;
         }
         else if(r.getSquare().x == 7)
@@ -671,7 +722,7 @@ public class Board implements Serializable//, Cloneable
             movePiece(k, this.board[6][k.getSquare().y]);
             movePiece(r, this.board[5][k.getSquare().y]);
             
-            this.whoseTurn = !this.whoseTurn;
+            //this.whoseTurn = !this.whoseTurn;
             return true;
         }
         
