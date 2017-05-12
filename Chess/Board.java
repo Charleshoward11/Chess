@@ -37,13 +37,14 @@ public class Board implements Serializable//, Cloneable
     
     public boolean isClone = false;
     
-    ChessScreen screen;
+    //ChessScreen screen;
     
     public boolean checkmate;
     public boolean stalemate;
     
     // If I'm going to have en passant capabilities, 
-    // there should probably be a variable here that stores a pawn that just double moved
+    // there should probably be a variable here that stores a pawn that just double moved.
+    Square enPassant;
     
     /**
      * Constructor for objects of class Board
@@ -87,14 +88,7 @@ public class Board implements Serializable//, Cloneable
         
         for(Piece p : blackPieces)
         {
-            try
-            {
-                placePiece(p);
-            }
-            catch(InvalidMoveException e)
-            {
-            }
-            
+            placePiece(p);
             p.setMoved(false);
         }
         
@@ -116,16 +110,11 @@ public class Board implements Serializable//, Cloneable
         
         for(Piece p : whitePieces)
         {
-            try
-            {
-                placePiece(p);
-            }
-            catch(InvalidMoveException e)
-            {
-            }
-            
+            placePiece(p);
             p.setMoved(false);
         }
+        
+        enPassant = null;
         
         return this;
     }
@@ -141,6 +130,23 @@ public class Board implements Serializable//, Cloneable
         copy.blackPieces = new ArrayList<Piece>();
         
         // Maybe I should make it go over the just the pieces instead of all the squares.
+        
+        for(Piece p : this.getAllPieces())
+        {
+            Piece pp = p.clone();
+            
+            copy.addPiece(pp);
+            
+            if(pp instanceof King)
+                if(pp.isWhite)
+                    copy.whiteKing = (King)pp;
+                else
+                    copy.blackKing = (King)pp;
+            
+            copy.placePiece(pp);
+        }
+        
+        /*
         for(int y = 0; y < 8; y++)
             for(int x = 0; x < 8; x++)
                 if(this.getPiece(x,y) != null)
@@ -165,12 +171,16 @@ public class Board implements Serializable//, Cloneable
                             copy.blackKing = (King)copyPiece;
                     }
                 }
+         */
         
         return copy;
     }
     
     /**
      * Requests a piece's moveset, then does a second pass on it to apply it to the board's current state.
+     * This is one of the most complex single methods I've ever written.
+     * 
+     * I could probably refactor this into the ValidMoveList class, if I REALLY wanted to.
      */
     public ValidMoveList getValidMoves(Piece p, boolean getChecks, boolean getCastles, boolean getMates)
     {
@@ -343,11 +353,14 @@ public class Board implements Serializable//, Cloneable
         ValidMoveList allValidMoves = new ValidMoveList();
         
         for(Piece p : this.getPieces(isWhite))
-        {
             allValidMoves.combineWith(this.getValidMoves(p, getChecks, getCastles, getMates));
-        }
         
         return allValidMoves;
+    }
+    
+    public ValidMoveList getAllValidMoves(boolean isWhite)
+    {
+        return getAllValidMoves(isWhite, true, true, true);
     }
     
     public Square getSquare(int x, int y)
@@ -364,14 +377,15 @@ public class Board implements Serializable//, Cloneable
      * (Somewhat deprecated)
      * Places a piece on the board based on the piece's internal x and y values.
      * 
-     * @return          true if successful, false if not (e.g. if the requested square is occupied).
+     * @return          true if successful.
      */
     public boolean placePiece(Piece p)
-    throws InvalidMoveException
+    //throws InvalidMoveException
     {
         int x = p.getX();
         int y = p.getY();
         
+        /*
         // Making sure that the requested square is actually ON the board.
         if(x < 0 || y < 0 || x > 7 || y > 7)
             throw new InvalidMoveException("" + x + "," + y + " is not a valid square on the board.");
@@ -379,7 +393,8 @@ public class Board implements Serializable//, Cloneable
         // Making sure that the requested square is unoccupied.
         if(board[x][y].hasPiece())
             throw new InvalidMoveException("" + x + "," + y + " is currently occupied.");
-        
+        */
+            
         board[x][y].setPiece(p);
         
         return true;
@@ -396,8 +411,8 @@ public class Board implements Serializable//, Cloneable
         if(m.castlingKing != null && m.castlingRook != null)
             return castle(m.castlingKing, m.castlingRook);
         
-        Piece f = m.getFrom().getPiece();
-        Piece t = m.getTo().getPiece();
+        Piece f = m.getPiece();
+        Piece t = m.to.getPiece();
         
         if(f == null)
             throw new InvalidMoveException("There is no piece on Square " + m.getFrom().x + "," + m.getFrom().y + ".");
@@ -407,12 +422,13 @@ public class Board implements Serializable//, Cloneable
             else // Dealing with the capturing of the piece.
                 this.removePiece(t);
         
-        m.getFrom().removePiece();
-        f.setSquare(m.getTo());
+        m.from.removePiece();
+        f.setSquare(m.to);
         
         // Giving the player a choice would be too much work, so I'll just automatically give them a queen.
         if(f instanceof Pawn)
         {
+            // Making the Pawn a Queen
             if((f.isWhite && f.getY() == 0) || (!f.isWhite && f.getY() == 7))
             {
                 Queen q = new Queen(f.isWhite, f.getX(),f.getY());
@@ -427,10 +443,19 @@ public class Board implements Serializable//, Cloneable
                 this.removePiece(f);
                 this.placePiece(q);
             }
+            
+            // En Passant?!
+            if(Math.abs(m.to.y - m.from.y) == 2)
+            {
+                //
+            }
         }
         
         // I could change the whoseTurn variable here.
         this.whoseTurn = !this.whoseTurn;
+        
+        // If I put in En Passant, I should clear it here.
+        this.enPassant = null;
         
         //return placePiece(p);
         return true;
@@ -475,26 +500,44 @@ public class Board implements Serializable//, Cloneable
     }
     
     /**
+     * Takes in a move and returns a clone of this board with that move performed.
+     */
+    public Board getMoveResult(Move m)
+    throws InvalidMoveException
+    {
+        Board copy = this.clone();
+        copy.movePiece(copy.cloneMove(m));
+        
+        return copy;
+    }
+    
+    /**
      * Takes in a King, and checks every possible move in the other player's turn.
      * 
      * @returns true if the given King is in check.
      */
     public boolean isInCheck(King k)
     {
-        for(Piece p : this.getPieces(!k.isWhite))
+        try
         {
-            ValidMoveList ml = this.getValidMoves(p, false, false, false);
-            
-            for(Move c : ml.getCaptures())
-                if(c.getTo().x == k.getX() && c.getTo().y == k.getY())
-                    return true;
+            for(Piece p : this.getPieces(!k.isWhite))
+            {
+                ValidMoveList ml = this.getValidMoves(p, false, false, false);
+                
+                for(Move c : ml.getCaptures())
+                    if(c.getTo().x == k.getX() && c.getTo().y == k.getY())
+                        return true;
+            }
+        }
+        catch(java.lang.NullPointerException e)
+        {
         }
         
         return false;
     }
     
     /**
-     * Takes in a Move and a Piece's color (represented by a boolean).
+     * Takes in a Move and a player's color (represented by a boolean).
      * Maybe I can refactor all this into an all-purpose method that 
      * returns an enum stating WHICH player is in check. The less 
      * clone-boards I have to create, the better.
@@ -503,22 +546,18 @@ public class Board implements Serializable//, Cloneable
      */
     public boolean wouldCauseCheck(Move m, boolean isWhite)
     {
-        Board copyBoard = this.clone();
-        
-        King k = copyBoard.getKing(!isWhite);
-        
-        Move cm = copyBoard.cloneMove(m);
+        Board copy;
         
         try
         {
-            copyBoard.movePiece(cm);
+            copy = this.getMoveResult(m);
         }
         catch(InvalidMoveException e)
         {
             return false;
         }
         
-        return copyBoard.isInCheck(k);
+        return copy.isInCheck(copy.getKing(!isWhite));
     }
     
     /**
@@ -555,20 +594,18 @@ public class Board implements Serializable//, Cloneable
     
     public int wouldCauseMate(Move m, boolean isWhite)
     {
-        Board copyBoard = this.clone();
-        
-        Move cm = copyBoard.cloneMove(m);
+        Board copy;
         
         try
         {
-            copyBoard.movePiece(cm);
+            copy = this.getMoveResult(m);
         }
         catch(InvalidMoveException e)
         {
             return 0;
         }
         
-        return copyBoard.isMate(!isWhite);
+        return copy.isMate(!isWhite);
     }
     
     public boolean canCastle(King k, Rook r)
@@ -625,7 +662,7 @@ public class Board implements Serializable//, Cloneable
         {
             movePiece(k, this.board[2][k.getSquare().y]);
             movePiece(r, this.board[3][k.getSquare().y]);
-            // I could change the whoseTurn variable here.
+            
             this.whoseTurn = !this.whoseTurn;
             return true;
         }
@@ -633,7 +670,7 @@ public class Board implements Serializable//, Cloneable
         {
             movePiece(k, this.board[6][k.getSquare().y]);
             movePiece(r, this.board[5][k.getSquare().y]);
-            // I could change the whoseTurn variable here.
+            
             this.whoseTurn = !this.whoseTurn;
             return true;
         }
@@ -722,8 +759,6 @@ public class Board implements Serializable//, Cloneable
         
         return rooks;
     }
-    
-    //public boolean isThreatenedBy()
     
     public boolean isWhoseTurn()
     {

@@ -8,49 +8,111 @@ import java.util.ArrayList;
  */
 public class Node
 {
-    // I figured this would be the best place to put these, to make them easily tweakable.
-    public static int movePoints =      1;
-    public static int pawnPoints =      1;
-    public static int bishopPoints =    3;
-    public static int knightPoints =    3;
-    public static int rookPoints =      5;
-    public static int queenPoints =     10;
-    public static int checkPoints =     8;
-    public static int checkMatePoints = 1000000;
-    
-    
-    // Points for this specific move.
-    public int points;
-    
     // Whether this is a move by a white piece or not.
     public boolean isWhite;
     
-    // Points for the entire tree of moves.
-    public int totalPoints;
+    // Points for this specific move.
+    public int basePoints;
     
     public final Move move;
     public Board moveResult;
     
-    ArrayList<Node> subsequentMoves;
+    ArrayList<Node> moveTree;
     
     /**
-     * @param   layer   How many more layers there should be.
+     * @param   layer   How many more moves to look ahead.
      * @param   m       The move.
      * @param   b       The board this node is being made for.
-     * @param   capture Whether this particular move is a capture or not.
      */
-    public Node(int layer, Move m, Board b, boolean capture, boolean isWhite)
+    public Node(Move mv, Board b, int layer, int bP, boolean aiIsWhite)
     {
-        this.move = m;
+        this.move = mv;
+        
+        this.basePoints = basePoints;
+        
+        this.isWhite = mv.getPiece().isWhite;
+        
+        //if(mv.to.hasPiece())
+        
+        try
+        {
+            this.moveResult = b.getMoveResult(mv);
+        }
+        catch(InvalidMoveException e)
+        {
+        }
+        
+        // If this is the AI's move or not.
+        int mod;
+        if(aiIsWhite == this.isWhite)
+            mod = 2;
+        else
+            mod = -1;
+            
+        this.moveTree = new ArrayList<Node>();
         
         if(layer > 0)
         {
-            ValidMoveList v 
+            ValidMoveList nextMoves = moveResult.getAllValidMoves(moveResult.isWhoseTurn());
+        
+            ArrayList<Move> movesAndCastles = new ArrayList<Move>();
+            movesAndCastles.addAll(nextMoves.getMoves());
+            movesAndCastles.addAll(nextMoves.getCastles());
+            
+            for(Move m : movesAndCastles)
+            {
+                Node n = new Node(m, this.moveResult, layer - 1, ChessAI.movePoints*mod, aiIsWhite);
+                //this.totalPoints += n.getPoints();
+                this.moveTree.add(n);
+            }
+            
+            for(Move m : nextMoves.getCaptures())
+            {
+                Node n = new Node(m, this.moveResult, layer - 1, m.to.getPiece().points*mod, aiIsWhite);
+                //this.totalPoints += n.getPoints();
+                this.moveTree.add(n);
+            }
+            
+            for(Move m : nextMoves.getChecks())
+            {
+                Node n = new Node(m, this.moveResult, layer - 1, ChessAI.checkPoints*mod, aiIsWhite);
+                //this.totalPoints += n.getPoints();
+                this.moveTree.add(n);
+            }
+            
+            for(Move m : nextMoves.getStalemates())
+            {
+                Node n = new Node(m, this.moveResult, 0, ChessAI.stalematePoints*mod, aiIsWhite);
+                //this.totalPoints += n.getPoints();
+                this.moveTree.add(n);
+            }
+            
+            for(Move m : nextMoves.getSelfChecks())
+            {
+                Node n = new Node(m, this.moveResult, 0, ChessAI.selfCheckPoints*mod, aiIsWhite);
+                //this.totalPoints += n.getPoints();
+                this.moveTree.add(n);
+            }
+            
+            for(Move m : nextMoves.getCheckmates())
+            {
+                Node n = new Node(m, this.moveResult, 0, ChessAI.checkmatePoints*mod, aiIsWhite);
+                //this.totalPoints += n.getPoints();
+                this.moveTree.add(n);
+            }
         }
     }
     
-    public int setPoints()
+    public int getPoints()
     {
+        int points = this.basePoints;
         
+        // Add the points of every Node in the moveTree.
+        for(Node n : this.moveTree)
+        {
+            points += n.getPoints();
+        }
+        
+        return points;
     }
 }

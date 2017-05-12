@@ -32,22 +32,20 @@ public class BaseGame extends Game
      *  should initialize assets stored by Skin object 
      *  or required by multiple screens.
      */
-    public void create() 
-    {        
+    public void create()
+    {
         game = this;
         skin = new Skin();
         
-        /*
-        // Label style
         
-        BitmapFont uiFont = new BitmapFont(Gdx.files.internal("assets/spacey.fnt"));
+        // Label style
+        BitmapFont uiFont = new BitmapFont(Gdx.files.internal("assets/cooper.fnt"));
         uiFont.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
         LabelStyle uiLabelStyle = new LabelStyle(uiFont, Color.WHITE);
         
         skin.add("uiLabelStyle", uiLabelStyle);
         
         // TextButton style
-        
         TextButtonStyle uiTextButtonStyle = new TextButtonStyle();
         
         Texture buttonTex = new Texture(Gdx.files.internal("assets/button.png"));
@@ -57,9 +55,9 @@ public class BaseGame extends Game
         uiTextButtonStyle.fontColor = new Color(0, 0.25f, 0, 1);
         
         skin.add("uiTextButtonStyle", uiTextButtonStyle);
-            */
         
-        BaseScreen s = new ChessScreen();
+        
+        BaseScreen s = new MenuScreen(game);
         setScreen(s);
     }
 }

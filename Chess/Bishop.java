@@ -24,7 +24,7 @@ public class Bishop extends Piece
     {
         Bishop copy = new Bishop(this.isWhite, this.getX(), this.getY());
         
-        //copy.setMoved(this.hasMoved());
+        copy.setMoved(this.hasMoved());
         
         return copy;
     }
@@ -115,6 +115,4 @@ public class Bishop extends Piece
             return "\u200A\u265D\u200A";
         }
     }
-    
-    public boolean isBishop(){return true;}
 }

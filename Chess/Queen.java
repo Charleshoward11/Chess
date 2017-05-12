@@ -19,7 +19,7 @@ public class Queen extends Piece
     {
         Queen copy = new Queen(this.isWhite, this.getX(), this.getY());
         
-        // Effectively pointless.
+        // Effectively pointless. Why?
         //copy.setMoved(this.hasMoved());
         
         return copy;
@@ -167,6 +167,4 @@ public class Queen extends Piece
             return "\u200A\u265B\u200A";
         }
     }
-    
-    public boolean isQueen(){return true;}
 }

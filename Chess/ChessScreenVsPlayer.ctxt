@@ -1,0 +1,13 @@
+#BlueJ class context
+comment0.params=g
+comment0.target=ChessScreenVsPlayer(com.badlogic.gdx.Game)
+comment1.params=
+comment1.target=void\ create()
+comment2.params=dt
+comment2.target=void\ update(float)
+comment3.params=m
+comment3.target=void\ performMove(Move)
+comment3.text=\r\n\ Performs\ a\ move\ without\ the\ player's\ input.\r\n
+comment4.params=
+comment4.target=void\ movePieceActors()
+numComments=5

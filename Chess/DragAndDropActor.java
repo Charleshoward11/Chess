@@ -103,7 +103,7 @@ public class DragAndDropActor extends BaseActor
         targetable = true;
         dropTarget = null;
         
-        ChessScreen screen = null;
+        //ChessScreen screen = null;
         
         
         addListener(

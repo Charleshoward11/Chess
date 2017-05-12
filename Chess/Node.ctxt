@@ -1,5 +1,7 @@
 #BlueJ class context
-comment0.params=m\ b\ capture
-comment0.target=Node(Move,\ Board,\ boolean)
-comment0.text=\r\n\ @param\ \ \ m\ \ \ \ \ \ \ The\ move.\r\n\ @param\ \ \ b\ \ \ \ \ \ \ The\ board\ this\ node\ is\ being\ made\ for.\r\n\ @param\ \ \ capture\ Whether\ this\ particular\ move\ is\ a\ capture\ or\ not.\r\n
-numComments=1
+comment0.params=mv\ b\ layer\ bP\ aiIsWhite
+comment0.target=Node(Move,\ Board,\ int,\ int,\ boolean)
+comment0.text=\r\n\ @param\ \ \ layer\ \ \ How\ many\ more\ moves\ to\ look\ ahead.\r\n\ @param\ \ \ m\ \ \ \ \ \ \ The\ move.\r\n\ @param\ \ \ b\ \ \ \ \ \ \ The\ board\ this\ node\ is\ being\ made\ for.\r\n
+comment1.params=
+comment1.target=int\ getPoints()
+numComments=2

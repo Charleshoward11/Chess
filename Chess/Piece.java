@@ -13,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.*;
  */
 public abstract class Piece implements Cloneable
 {
+    public static int points;
+    
     /**
      * (Deprecated) Integers that store the piece's position on the board.
      */

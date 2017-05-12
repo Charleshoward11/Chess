@@ -1,6 +1,6 @@
 #BlueJ class context
-comment0.params=b
-comment0.target=ChessAI(Board)
+comment0.params=d\ iW\ b
+comment0.target=ChessAI(int,\ boolean,\ Board)
 comment0.text=\r\n\ Constructor\ might\ take\ in\ a\ difficulty\ or\ a\ knowlege\ base\ or\ something.\r\n
 comment1.params=
 comment1.target=Move\ decideMove()

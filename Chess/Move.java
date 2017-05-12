@@ -13,9 +13,6 @@ public class Move implements Serializable
     // because they're sorted when put into the ValidMoveList class.
     //private boolean capture;
     
-    //private boolean yourCheck;
-    //private boolean theirCheck;
-    
     /**
      * Only used when the move is a castle.
      */
@@ -112,17 +109,15 @@ public class Move implements Serializable
         return this.to;
     }
     
-    //public boolean isCapture()
-    //{
-    //    return this.capture;
-    //}
-    
-    //public Move setCapture(boolean c)
-    //{
-    //    this.capture = c;
-    //    
-    //    return this;
-    //}
+    /**
+     * This is something that I seem to do a lot.
+     * 
+     * @return      The piece that is moving (I.E. the piece on the "from" square).
+     */
+    public Piece getPiece()
+    {
+        return this.from.getPiece();
+    }
     
     public String toString()
     {

@@ -8,6 +8,4 @@ comment2.target=java.util.ArrayList\ getMoves(Board)
 comment2.text=\r\n\ This'll\ be\ fun.\r\n
 comment3.params=
 comment3.target=java.lang.String\ toString()
-comment4.params=
-comment4.target=boolean\ isQueen()
-numComments=5
+numComments=4

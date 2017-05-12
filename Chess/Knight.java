@@ -19,7 +19,7 @@ public class Knight extends Piece
     {
         Knight copy = new Knight(this.isWhite, this.getX(), this.getY());
         
-        //copy.setMoved(this.hasMoved());
+        copy.setMoved(this.hasMoved());
         
         return copy;
     }
@@ -119,6 +119,4 @@ public class Knight extends Piece
             return "\u200A\u265E\u200A";
         }
     }
-    
-    public boolean isKnight(){return true;}
 }

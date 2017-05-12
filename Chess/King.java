@@ -10,8 +10,6 @@ import java.util.*;
  */
 public class King extends Piece
 {
-    public boolean check;
-    
     public King(boolean isWhite, int x, int y)
     {
         super(isWhite, x, y);
@@ -21,7 +19,7 @@ public class King extends Piece
     {
         King copy = new King(this.isWhite, this.getX(), this.getY());
         
-        //copy.setMoved(this.hasMoved());
+        copy.setMoved(this.hasMoved());
         
         return copy;
     }
@@ -86,33 +84,22 @@ public class King extends Piece
             moves.add(new Move(b, this, b.getSquare(getX(), getY() + 1)));
         }
         
-        /*
-        // Castling. Need to update this.
-        if(!hasMoved())
-        {
-            ArrayList<Move> castling = new ArrayList<Move>();
-            castling.add(new Move(b, this, b.getSquare(6, getY())));
-            castling.add(new Move(b, this, b.getSquare(2, getY())));
-            m.add(castling);
-        }
-         */
-        
         return m;
     }
     
     // Maybe a castling method here (or somewhere) that moves the king and the rook at the same time?
     
-    public King setCheck(boolean c)
-    {
-        this.check = c;
+    //public King setCheck(boolean c)
+    //{
+    //    this.check = c;
         
-        return this;
-    }
+    //    return this;
+    //}
     
-    public boolean isCheck()
-    {
-        return this.check;
-    }
+    //public boolean isCheck()
+    //{
+    //    return this.check;
+    //}
     
     public String toString()
     {
@@ -124,10 +111,5 @@ public class King extends Piece
         {
             return "\u200A\u265A\u200A";
         }
-    }
-    
-    public boolean isKing()
-    {
-        return true;
     }
 }

@@ -1,6 +1,6 @@
 #BlueJ class context
-comment0.params=
-comment0.target=BaseScreen()
+comment0.params=g
+comment0.target=BaseScreen(com.badlogic.gdx.Game)
 comment1.params=
 comment1.target=void\ create()
 comment10.params=keycode

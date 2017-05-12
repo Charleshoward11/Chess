@@ -20,26 +20,30 @@ import java.util.HashMap;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
-public class ChessScreen extends BaseScreen
+public class ChessScreenVsAI extends BaseScreen
 {
     Board board;
     Table boardTable;
     
     boolean playerIsWhite;
     
+    boolean gameOver;
+    
     BaseActor checkmateText;
     BaseActor stalemateText;
     
-    public ChessScreen()
+    ChessAI chester;
+    
+    public ChessScreenVsAI(Game g)
     {
-        super();
+        super(g);
     }
     
     public void create() 
     {
-        board = new Board();
+        board = new Board().resetBoard();
         
-        board.resetBoard();
+        playerIsWhite = true;
         
         boardTable = new Table();
         boardTable.setFillParent(true);
@@ -97,56 +101,73 @@ public class ChessScreen extends BaseScreen
         stalemateText.alignToActorCenter(uiTable);
         stalemateText.toFront();
         stalemateText.setVisible(false);
+        
+        gameOver = false;
+        
+        // Create the AI
+        chester = new ChessAI(3, !playerIsWhite, board);
     }
     
     public void update(float dt) 
     {
-        PieceActor dropped = null;
-        
-        for(BaseActor b : BaseActor.getList("PieceActor"))
+        if(board.isWhoseTurn() == playerIsWhite)
         {
-            PieceActor c = (PieceActor)b;
-            if(c.isDropped())
-                dropped = c;
-        }
-        
-        // Was something dropped?
-        if(dropped != null)
-        {
-            SquareActor s = (SquareActor)dropped.getDropTarget();
+            PieceActor dropped = null;
             
-            //System.out.println(p.name);
-            
-            if(s != null)
-            {
-                dropped.piece.setSquare(s.square);
-                //dropped.moveToActor(s);
-            }
-            
-            // Finds each piece 
             for(BaseActor b : BaseActor.getList("PieceActor"))
             {
                 PieceActor c = (PieceActor)b;
-                c.moveToActor(c.piece.getSquare().getActor());
+                if(c.isDropped())
+                    dropped = c;
+            }
+            
+            // Was something dropped?
+            if(dropped != null)
+            {
+                SquareActor s = (SquareActor)dropped.getDropTarget();
                 
-                // Should I remove captured pieces here?
-                if(!(board.getAllPieces().contains(c.piece)))
+                //System.out.println(p.name);
+                
+                if(s != null)
                 {
-                    c.remove();
+                    dropped.piece.setSquare(s.square);
+                    //dropped.moveToActor(s);
                 }
                 
-                //c.alignToActorCenter(c.piece.getSquare().getActor());
+                movePieceActors();
+                
+                dropped.setDropped(false);
+                
+                if(board.checkmate && !gameOver)
+                {
+                    checkmateText.setVisible(true);
+                    gameOver = true;
+                    // Could have it also say "You win" here.
+                }
+                else if(board.stalemate && !gameOver)
+                {
+                    stalemateText.setVisible(true);
+                    gameOver = true;
+                }
             }
+        }
+        else
+        {
+            // Get the AI's move and perform it.
+            performMove(chester.decideMove());
+            movePieceActors();
             
-            dropped.setDropped(false);
-            
-            if(board.checkmate)
+            // Then check if the board's in checkmate
+            if(board.checkmate && !gameOver)
             {
                 checkmateText.setVisible(true);
+                gameOver = true;
+                // Could have it also say "You win" here.
             }
-            else if(board.stalemate)
+            else if(board.stalemate && !gameOver)
             {
                 stalemateText.setVisible(true);
+                gameOver = true;
             }
         }
     }
@@ -156,6 +177,46 @@ public class ChessScreen extends BaseScreen
      */
     public void performMove(Move m)
     {
+        // Make captured piece fade?
         
+        try
+        {
+            Thread.sleep(300);
+        }
+        catch(Exception e)
+        {
+        }
+        
+        if(m.to.hasPiece())
+            m.to.getPiece().getActor().addAction(Actions.sequence(
+            Actions.fadeOut(0.05f), Actions.removeActor()));
+        
+        try 
+        {
+            board.movePiece(m);
+        }
+        catch(InvalidMoveException e)
+        {
+        }
+        
+        movePieceActors();
+    }
+    
+    public void movePieceActors()
+    {
+        // Finds each piece and moves it to where it should be.
+        for(BaseActor b : BaseActor.getList("PieceActor"))
+        {
+            PieceActor c = (PieceActor)b;
+            c.moveToActor(c.piece.getSquare().getActor());
+            
+            // Should I remove captured pieces here?
+            if(!(board.getAllPieces().contains(c.piece)))
+            {
+                c.remove();
+            }
+            
+            //c.alignToActorCenter(c.piece.getSquare().getActor());
+        }
     }
 }
