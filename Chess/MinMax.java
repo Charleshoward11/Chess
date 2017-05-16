@@ -1,4 +1,4 @@
-/**
+/** FROM: https://github.com/squidarth/ChessAI
  * The MinMax class implements AI and defines an AI that uses the Minimax algorithm 
  * to figure out what moves to make.  This is a very complex class.
  * 
