@@ -23,6 +23,9 @@ public class ChessAI
     public static int selfCheckPoints;
     public static int stalematePoints;
     
+    public static float offenseMod;
+    public static float defenseMod;
+    
     public int depth;
     public final boolean isWhite;
     public final Board primaryBoard;
@@ -45,6 +48,10 @@ public class ChessAI
         Knight.points =     30;
         Rook.points =       50;
         Queen.points =      100;
+        King.points =       1000000;
+        
+        offenseMod = 1f;
+        defenseMod = -1f;
         
         this.depth = d;
         this.isWhite = iW;
@@ -74,50 +81,36 @@ public class ChessAI
         movesAndCastles.addAll(availableMoves.getMoves());
         //movesAndCastles.addAll(availableMoves.getCastles());
         
+        System.out.print('\u000C');
         System.out.println("Creating nodes...");
-        int i = 0;
+        Node.nodeNum = 0;
         
         for(Move m : movesAndCastles)
         {
-            i++;
-            //System.out.println("Creating node " + i);
-            
             Node n = new Node(m, this.primaryBoard, this.depth, ChessAI.movePoints, this.isWhite);
             choices.add(n);
         }
         
         for(Move m : availableMoves.getCaptures())
         {
-            i++;
-            //System.out.println("Creating node " + i);
-            
             Node n = new Node(m, this.primaryBoard, this.depth, m.to.getPiece().points, this.isWhite);
             choices.add(n);
         }
         
         for(Move m : availableMoves.getChecks())
         {
-            i++;
-            //System.out.println("Creating node " + i);
-            
             Node n = new Node(m, this.primaryBoard, this.depth, ChessAI.checkPoints, this.isWhite);
             choices.add(n);
         }
         
         for(Move m : availableMoves.getStalemates())
         {
-            i++;
-            //System.out.println("Creating node " + i);
-            
             Node n = new Node(m, this.primaryBoard, 0, ChessAI.stalematePoints, this.isWhite);
             choices.add(n);
         }
         /*
         for(Move m : availableMoves.getSelfChecks())
         {
-            i++;
-            //System.out.println("Creating node " + i);
-            
             Node n = new Node(m, this.primaryBoard, 0, ChessAI.selfCheckPoints, this.isWhite);
             choices.add(n);
         }

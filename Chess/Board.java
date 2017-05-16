@@ -16,7 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.*;
  * @author Charles Howard
  * @version (a version number or a date)
  */
-public class Board implements Serializable//, Cloneable
+public class Board //, Cloneable
 {
     private Square[][] board = new Square[8][8];
     
@@ -44,7 +44,8 @@ public class Board implements Serializable//, Cloneable
     
     // If I'm going to have en passant capabilities, 
     // there should probably be a variable here that stores a pawn that just double moved.
-    Square enPassant;
+    Pawn enPassant;
+    Square enPassantTarget;
     
     /**
      * Constructor for objects of class Board
@@ -61,10 +62,6 @@ public class Board implements Serializable//, Cloneable
      */
     public Board resetBoard()
     {
-        // Maybe I can have two ArrayLists, one of each color of pieces.
-        // I add all the pieces to their respective lists, then use a for/each
-        // loop on each list to place the pieces on the board.
-        
         whoseTurn = true;
         
         checkmate = false;
@@ -115,6 +112,7 @@ public class Board implements Serializable//, Cloneable
         }
         
         enPassant = null;
+        enPassantTarget = null;
         
         return this;
     }
@@ -128,8 +126,6 @@ public class Board implements Serializable//, Cloneable
         
         copy.whitePieces = new ArrayList<Piece>();
         copy.blackPieces = new ArrayList<Piece>();
-        
-        // Maybe I should make it go over the just the pieces instead of all the squares.
         
         for(Piece p : this.getAllPieces())
         {
@@ -146,32 +142,17 @@ public class Board implements Serializable//, Cloneable
             copy.placePiece(pp);
         }
         
-        /*
-        for(int y = 0; y < 8; y++)
-            for(int x = 0; x < 8; x++)
-                if(this.getPiece(x,y) != null)
-                {
-                    Piece copyPiece = this.getPiece(x,y).clone();
-                    
-                    copy.getSquare(x,y).setPiece(copyPiece);
-                    
-                    copyPiece.setMoved(this.getPiece(x,y).hasMoved());
-                    
-                    //Add the piece to the ArrayLists
-                    if(copyPiece.isWhite)
-                    {
-                        copy.whitePieces.add(copyPiece);
-                        if(copyPiece instanceof King)
-                            copy.whiteKing = (King)copyPiece;
-                    }
-                    else
-                    {
-                        copy.blackPieces.add(copyPiece);
-                        if(copyPiece instanceof King)
-                            copy.blackKing = (King)copyPiece;
-                    }
-                }
-         */
+        return copy;
+    }
+    
+    /**
+     * Takes in a move and returns a clone of this board with that move performed.
+     */
+    public Board getMoveResult(Move m)
+    throws InvalidMoveException
+    {
+        Board copy = this.clone();
+        copy.movePiece(copy.cloneMove(m));
         
         return copy;
     }
@@ -266,6 +247,8 @@ public class Board implements Serializable//, Cloneable
             {
                 Square s = mm.getTo();
                 
+                // En Passant?!
+                
                 if(s.hasPiece())
                     if(p.isWhite != s.getPiece().isWhite)
                         captures.add(mm);
@@ -322,24 +305,24 @@ public class Board implements Serializable//, Cloneable
         }
         
         ValidMoveList processedMoves = new ValidMoveList(moves, captures, castles, checks, checkmates, selfChecks, stalemates);
-        //processedMoves.removeDuplicates();
+        processedMoves.removeDuplicates();
         
         return processedMoves;
     }
     
     public ValidMoveList getValidMoves(Piece p)
     {
-        return getValidMoves(p, true, true, true);
+        return this.getValidMoves(p, true, true, true);
     }
     
     public ValidMoveList getValidMoves(Square s)
     {
-        return getValidMoves(s.getPiece(), true, true, true);
+        return this.getValidMoves(s.getPiece(), true, true, true);
     }
     
     public ValidMoveList getValidMoves(int x, int y)
     {
-        return getValidMoves(board[x][y].getPiece(), true, true, true);
+        return this.getValidMoves(board[x][y].getPiece(), true, true, true);
     }
     
     /**
@@ -365,12 +348,12 @@ public class Board implements Serializable//, Cloneable
     
     public Square getSquare(int x, int y)
     {
-        return board[x][y];
+        return this.board[x][y];
     }
     
     public Piece getPiece(int x, int y)
     {
-        return board[x][y].getPiece();
+        return this.board[x][y].getPiece();
     }
     
     /**
@@ -401,9 +384,9 @@ public class Board implements Serializable//, Cloneable
     }
     
     /**
-     * Move a piece from one square to another. Also changes whoseTurn. 
+     * Move a piece from one square to another. Also changes whoseTurn.
      * 
-     * @return          true if successful (possibly unnecessary?).
+     * @param m    The Move to perform.
      */
     public void movePiece(Move m)
     throws InvalidMoveException
@@ -429,12 +412,15 @@ public class Board implements Serializable//, Cloneable
         m.from.removePiece();
         f.setSquare(m.to);
         
-        // Giving the player a choice would be too much work, so I'll just automatically give them a queen.
+        enPassant = null;
+        enPassantTarget = null;
+        
         if(f instanceof Pawn)
         {
-            // Making the Pawn a Queen
+            // Making the pawn transform.
             if((f.isWhite && f.getY() == 0) || (!f.isWhite && f.getY() == 7))
             {
+                // Giving the player a choice would be too much work, so I'll just automatically give them a queen.
                 Queen q = new Queen(f.isWhite, f.getX(),f.getY());
                 
                 this.addPiece(q);
@@ -451,7 +437,9 @@ public class Board implements Serializable//, Cloneable
             // En Passant?!
             if(Math.abs(m.to.y - m.from.y) == 2)
             {
-                //
+                enPassant = (Pawn)f;
+                
+                int averageY = (m.from.y + m.to.y) / 2;
             }
         }
         
@@ -466,19 +454,19 @@ public class Board implements Serializable//, Cloneable
     public void movePiece(int fX, int fY, int tX, int tY)
     throws InvalidMoveException
     {
-        movePiece(new Move(this, fX,fY, tX,tY));
+        this.movePiece(new Move(this, fX,fY, tX,tY));
     }
     
     public void movePiece(Square from, Square to)
     throws InvalidMoveException
     {
-        movePiece(new Move(from, to));
+        this.movePiece(new Move(from, to));
     }
     
     public void movePiece(Piece p, Square target)
     throws InvalidMoveException
     {
-        movePiece(p.getSquare(), target);
+        this.movePiece(p.getSquare(), target);
     }
     
     /**
@@ -498,18 +486,6 @@ public class Board implements Serializable//, Cloneable
         }
         
         return new Move(this, m.from.x,m.from.y, m.to.x,m.to.y);
-    }
-    
-    /**
-     * Takes in a move and returns a clone of this board with that move performed.
-     */
-    public Board getMoveResult(Move m)
-    throws InvalidMoveException
-    {
-        Board copy = this.clone();
-        copy.movePiece(copy.cloneMove(m));
-        
-        return copy;
     }
     
     /**
@@ -562,24 +538,12 @@ public class Board implements Serializable//, Cloneable
     }
     
     /**
-     * Hopefully I can make this more efficient.
+     * Hopefully I can make this more efficient. I might not need to make an entire clone.
+     * 
+     * I don't think this will work. The Pawns are causing issues.
      */
-    public boolean wouldCauseCheckNEW(Move m, boolean isWhite)
+    public boolean wouldCauseCheckFixAttempt(Move m, boolean isWhite)
     {
-        // Need to account for Castling? Actually, maybe not.
-        /*
-        if(m.castlingKing != null && m.castlingRook != null)
-        {
-            King k = m.castlingKing;
-            Rook r = m.castlingRook;
-            
-            Square kOrigin = k.getSquare();
-            Square rOrigin = r.getSquare();
-            
-            castle(k,r);
-        }
-         */
-        
         // Piece that would be hypothetically be captured.
         Piece c = m.to.getPiece();
         boolean cMoved = true;
@@ -665,6 +629,10 @@ public class Board implements Serializable//, Cloneable
         if(k.hasMoved() || r.hasMoved() || k.isWhite != r.isWhite)
             return false;
         
+        // If King is in check
+        if(isInCheck(k))
+            return false;
+        
         // If other pieces are in the way/if any of the King's squares would be check.
         // The for loops themselves actually figure out which Rook it is. 
         for(int i = 3; i > r.getX(); i--)
@@ -689,10 +657,6 @@ public class Board implements Serializable//, Cloneable
             if(wouldCauseCheck(new Move(k.getSquare(), s), !k.isWhite))
                 return false;
         }
-        
-        // If King is in check
-        if(isInCheck(k))
-            return false;
         
         // If none of those were true
         return true;

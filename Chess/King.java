@@ -43,13 +43,9 @@ public class King extends Piece
         {
             moves.add(new Move(b, this, b.getSquare(getX() - 1, getY())));
             if(getY() > 0)
-            {
                 moves.add(new Move(b, this, b.getSquare(getX() - 1, getY() - 1)));
-            }
             if(getY() < 7)
-            {
                 moves.add(new Move(b, this, b.getSquare(getX() - 1, getY() + 1)));
-            }
         }
         
         /* Adding these moves:
@@ -61,13 +57,9 @@ public class King extends Piece
         {
             moves.add(new Move(b, this, b.getSquare(getX() + 1, getY())));
             if(getY() > 0)
-            {
                 moves.add(new Move(b, this, b.getSquare(getX() + 1, getY() - 1)));
-            }
             if(getY() < 7)
-            {
                 moves.add(new Move(b, this, b.getSquare(getX() + 1, getY() + 1)));
-            }
         }
         
         /* Adding these moves:
@@ -76,40 +68,18 @@ public class King extends Piece
          * [ ][+][ ]
          */
         if(getY() > 0)
-        {
             moves.add(new Move(b, this, b.getSquare(getX(), getY() - 1)));
-        }
         if(getY() < 7)
-        {
             moves.add(new Move(b, this, b.getSquare(getX(), getY() + 1)));
-        }
         
         return m;
     }
     
-    // Maybe a castling method here (or somewhere) that moves the king and the rook at the same time?
-    
-    //public King setCheck(boolean c)
-    //{
-    //    this.check = c;
-        
-    //    return this;
-    //}
-    
-    //public boolean isCheck()
-    //{
-    //    return this.check;
-    //}
-    
     public String toString()
     {
         if(isWhite)
-        {
             return "\u200A\u2654\u200A";
-        }
         else
-        {
             return "\u200A\u265A\u200A";
-        }
     }
 }

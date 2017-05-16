@@ -33,6 +33,7 @@ public class ChessScreenVsAI extends BaseScreen
     BaseActor stalemateText;
     
     ChessAI chester;
+    Thread aiMove;
     
     public ChessScreenVsAI(Game g)
     {
@@ -71,6 +72,7 @@ public class ChessScreenVsAI extends BaseScreen
         for(Piece p : board.getPieces(false))
         {
             p.setActor(new PieceActor(p, mainStage));
+            p.getActor().setDraggable(false);
         }
         
         // I can't believe this worked.
@@ -110,6 +112,11 @@ public class ChessScreenVsAI extends BaseScreen
     
     public void update(float dt) 
     {
+        if(!DragAndDropActor.isDragged())
+        {
+            movePieceActors();
+        }
+        
         if(board.isWhoseTurn() == playerIsWhite)
         {
             PieceActor dropped = null;
@@ -134,7 +141,7 @@ public class ChessScreenVsAI extends BaseScreen
                     //dropped.moveToActor(s);
                 }
                 
-                movePieceActors();
+                //movePieceActors();
                 
                 dropped.setDropped(false);
                 
@@ -149,14 +156,35 @@ public class ChessScreenVsAI extends BaseScreen
                     stalemateText.setVisible(true);
                     gameOver = true;
                 }
+                
+                aiMove = null;
             }
         }
-        else
+        else if(!gameOver)
         {
             // Get the AI's move and perform it.
-            performMove(chester.decideMove());
-            movePieceActors();
             
+            if(aiMove == null && !gameOver)
+            {
+                aiMove = new Thread()
+                {
+                    public void run()
+                    {
+                        try
+                        {
+                            Thread.sleep(50);
+                        }
+                        catch(Exception e)
+                        {
+                        }
+                        
+                        Move mm = chester.decideMove();
+                        performMove(mm);
+                    }
+                }
+                ;
+                aiMove.start();
+            }
             // Then check if the board's in checkmate
             if(board.checkmate && !gameOver)
             {
@@ -178,18 +206,12 @@ public class ChessScreenVsAI extends BaseScreen
     public void performMove(Move m)
     {
         // Make captured piece fade?
-        
-        try
-        {
-            Thread.sleep(300);
-        }
-        catch(Exception e)
-        {
-        }
-        
         if(m.to.hasPiece())
+        {
             m.to.getPiece().getActor().addAction(Actions.sequence(
             Actions.fadeOut(0.05f), Actions.removeActor()));
+            m.to.removePiece();
+        }
         
         try 
         {
@@ -197,9 +219,8 @@ public class ChessScreenVsAI extends BaseScreen
         }
         catch(InvalidMoveException e)
         {
+            e.printStackTrace();
         }
-        
-        movePieceActors();
     }
     
     public void movePieceActors()

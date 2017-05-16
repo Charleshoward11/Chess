@@ -30,6 +30,7 @@ public class Node
     public Node(Move mv, Board b, int layer, int bP, boolean aiIsWhite)
     {
         nodeNum++;
+        
         System.out.println("Creating node #" + nodeNum + " on layer #" + layer + "...");
         
         this.move = mv;
@@ -37,8 +38,6 @@ public class Node
         this.basePoints = basePoints;
         
         this.isWhite = mv.getPiece().isWhite;
-        
-        //if(mv.to.hasPiece())
         
         try
         {
@@ -49,11 +48,11 @@ public class Node
         }
         
         // If this is the AI's move or not.
-        int mod;
+        float mod;
         if(aiIsWhite == this.isWhite)
-            mod = 2;
+            mod = ChessAI.offenseMod;
         else
-            mod = -1;
+            mod = ChessAI.defenseMod;
             
         this.moveTree = new ArrayList<Node>();
         
@@ -67,28 +66,28 @@ public class Node
             
             for(Move m : movesAndCastles)
             {
-                Node n = new Node(m, this.moveResult, layer - 1, ChessAI.movePoints*mod, aiIsWhite);
+                Node n = new Node(m, this.moveResult, layer - 1, (int)(ChessAI.movePoints*mod), aiIsWhite);
                 //this.totalPoints += n.getPoints();
                 this.moveTree.add(n);
             }
             
             for(Move m : nextMoves.getCaptures())
             {
-                Node n = new Node(m, this.moveResult, layer - 1, m.to.getPiece().points*mod, aiIsWhite);
+                Node n = new Node(m, this.moveResult, layer - 1, (int)(m.to.getPiece().points*mod), aiIsWhite);
                 //this.totalPoints += n.getPoints();
                 this.moveTree.add(n);
             }
             
             for(Move m : nextMoves.getChecks())
             {
-                Node n = new Node(m, this.moveResult, layer - 1, ChessAI.checkPoints*mod, aiIsWhite);
+                Node n = new Node(m, this.moveResult, layer - 1, (int)(ChessAI.checkPoints*mod), aiIsWhite);
                 //this.totalPoints += n.getPoints();
                 this.moveTree.add(n);
             }
             
             for(Move m : nextMoves.getStalemates())
             {
-                Node n = new Node(m, this.moveResult, 0, ChessAI.stalematePoints*mod, aiIsWhite);
+                Node n = new Node(m, this.moveResult, 0, (int)(ChessAI.stalematePoints*mod), aiIsWhite);
                 //this.totalPoints += n.getPoints();
                 this.moveTree.add(n);
             }
@@ -96,7 +95,7 @@ public class Node
             /*
             for(Move m : nextMoves.getSelfChecks())
             {
-                Node n = new Node(m, this.moveResult, 0, ChessAI.selfCheckPoints*mod, aiIsWhite);
+                Node n = new Node(m, this.moveResult, 0, (int)(ChessAI.selfCheckPoints*mod), aiIsWhite);
                 //this.totalPoints += n.getPoints();
                 this.moveTree.add(n);
             }
@@ -104,7 +103,7 @@ public class Node
             
             for(Move m : nextMoves.getCheckmates())
             {
-                Node n = new Node(m, this.moveResult, 0, ChessAI.checkmatePoints*mod, aiIsWhite);
+                Node n = new Node(m, this.moveResult, 0, (int)(ChessAI.checkmatePoints*mod), aiIsWhite);
                 //this.totalPoints += n.getPoints();
                 this.moveTree.add(n);
             }

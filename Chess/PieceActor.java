@@ -67,11 +67,10 @@ public class PieceActor extends DragAndDropActor
      */
     public void draw(Batch batch, float parentAlpha) 
     {
-
         // create a drop shadow effect:
         //   set tint color to translucent black
         batch.setColor(0,0,0, 0.5f);
-
+        
         // ranges from 1.00 to 1.25
         float scale = this.getScaleX();
         
@@ -81,14 +80,14 @@ public class PieceActor extends DragAndDropActor
         batch.draw(animation.getKeyFrame(elapsedTime), 
             getX() + 10 * percent, getY() - 10 * percent, getOriginX(), getOriginY(),
             getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
-
+        
         super.draw(batch, parentAlpha);
-
+        
         /*
         Color c = getColor(); // used to apply tint color effect
-
+        
         batch.setColor(c.r, c.g, c.b, c.a);
-
+        
         if (animation != null && isVisible())
         batch.draw(animation.getKeyFrame(elapsedTime), 
         getX(), getY(), getOriginX(), getOriginY(),
@@ -99,9 +98,7 @@ public class PieceActor extends DragAndDropActor
     public void pawnToQueen(Queen q)
     {
         if(!(this.piece instanceof Pawn))
-        {
             return;
-        }
         
         this.piece = q;
         q.setActor(this);

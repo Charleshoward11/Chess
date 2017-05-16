@@ -25,6 +25,9 @@ public class DragAndDropActor extends BaseActor
     private boolean targetable;
     private DragAndDropActor dropTarget;
     
+    // If something is being dragged.
+    private static boolean dragged = false;
+    
     /**
      *  Set whether this actor can be dragged.
      */
@@ -39,6 +42,16 @@ public class DragAndDropActor extends BaseActor
     public boolean isDraggable()
     {
         return draggable;
+    }
+    
+    public static void setDragged(boolean b)
+    {
+        dragged = b;
+    }
+    
+    public static boolean isDragged()
+    {
+        return dragged;
     }
     
     /**
@@ -116,7 +129,9 @@ public class DragAndDropActor extends BaseActor
                     
                     if(!self.isDraggable())
                         return false;
-                        
+                    
+                    setDragged(true);
+                    
                     self.grabOffsetX = eventOffsetX;
                     self.grabOffsetY = eventOffsetY;
                     
@@ -201,6 +216,8 @@ public class DragAndDropActor extends BaseActor
                 
                 public void touchUp(InputEvent event, float eventOffsetX, float eventOffsetY, int pointer, int button) 
                 {
+                    setDragged(false);
+                    
                     self.setDropped(true);
                     
                     // determine if self is dropped on a target, and if so, store reference to target.

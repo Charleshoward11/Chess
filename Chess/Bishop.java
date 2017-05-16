@@ -107,12 +107,8 @@ public class Bishop extends Piece
     public String toString()
     {
         if(isWhite)
-        {
             return "\u200A\u2657\u200A";
-        }
         else
-        {
             return "\u200A\u265D\u200A";
-        }
     }
 }

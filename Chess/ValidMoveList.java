@@ -51,8 +51,6 @@ public class ValidMoveList
         this.checkmates = checkmates;
         this.selfChecks = selfChecks;
         this.stalemates = stalemates;
-        
-        this.removeDuplicates();
     }
     
     public ValidMoveList addMove(Move m)

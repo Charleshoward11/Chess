@@ -159,12 +159,8 @@ public class Queen extends Piece
     public String toString()
     {
         if(isWhite)
-        {
             return "\u200A\u2655\u200A";
-        }
         else
-        {
             return "\u200A\u265B\u200A";
-        }
     }
 }

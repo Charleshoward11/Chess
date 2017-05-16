@@ -45,13 +45,9 @@ public class Knight extends Piece
         if(x1 > 1)
         {
             if(y1 > 0)
-            {
                 moves.add(new Move(b, this, x1 - 2, y1 - 1));
-            }
             if(y1 < 7)
-            {
                 moves.add(new Move(b, this, x1 - 2, y1 + 1));
-            }
         }
         
         /* Adding these moves.
@@ -62,13 +58,9 @@ public class Knight extends Piece
         if(y1 > 1)
         {
             if(x1 > 0)
-            {
                 moves.add(new Move(b, this, x1 - 1, y1 - 2));
-            }
             if(x1 < 7)
-            {
                 moves.add(new Move(b, this, x1 + 1, y1 - 2));
-            }
         }
         
         /* Adding these moves.
@@ -79,13 +71,9 @@ public class Knight extends Piece
         if(x1 < 6)
         {
             if(y1 > 0)
-            {
                 moves.add(new Move(b, this, x1 + 2, y1 - 1));
-            }
             if(y1 < 7)
-            {
                 moves.add(new Move(b, this, x1 + 2, y1 + 1));
-            }
         }
         
         /* Adding these moves.
@@ -96,13 +84,9 @@ public class Knight extends Piece
         if(y1 < 6)
         {
             if(x1 > 0)
-            {
                 moves.add(new Move(b, this, x1 - 1, y1 + 2));
-            }
             if(x1 < 7)
-            {
                 moves.add(new Move(b, this, x1 + 1, y1 + 2));
-            }
         }
         
         return m;
@@ -111,12 +95,8 @@ public class Knight extends Piece
     public String toString()
     {
         if(isWhite)
-        {
             return "\u200A\u2658\u200A";
-        }
         else
-        {
             return "\u200A\u265E\u200A";
-        }
     }
 }

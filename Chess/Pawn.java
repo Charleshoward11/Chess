@@ -35,35 +35,29 @@ public class Pawn extends Piece
         int mod = 0;
         
         if(isWhite)
-        {
             mod = -1;
-        }
         else
-        {
             mod = 1;
-        }
-        
-        ArrayList<Move> forward = new ArrayList<Move>();
         
         // ArrayList for the pawn moving forward.
+        ArrayList<Move> forward = new ArrayList<Move>();
+        
         forward.add(new Move(b, this, getX(), getY() + mod));
+        
         // Adding the initial double move
         if(!hasMoved())
-        {
             forward.add(new Move(b, this, getX(), getY() + (2 * mod)));
-        }
+        
         m.add(forward);
         
         // ArrayList for the pawn's diagonal capture moves
         ArrayList<Move> captures = new ArrayList<Move>();
         if(getX() < 7)
-        {
             captures.add(new Move(b, this, getX() + 1, getY() + mod));
-        }
+        
         if(getX() > 0)
-        {
             captures.add(new Move(b, this, getX() - 1, getY() + mod));
-        }
+        
         m.add(captures);
         
         return m;
@@ -72,12 +66,8 @@ public class Pawn extends Piece
     public String toString()
     {
         if(isWhite)
-        {
             return "\u200A\u2659\u200A";
-        }
         else
-        {
             return "\u200A\u265F\u200A";
-        }
     }
 }

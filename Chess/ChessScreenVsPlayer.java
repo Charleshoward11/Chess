@@ -61,12 +61,7 @@ public class ChessScreenVsPlayer extends BaseScreen
         }
         
         
-        for(Piece p : board.getPieces(true))
-        {
-            p.setActor(new PieceActor(p, mainStage));
-        }
-        
-        for(Piece p : board.getPieces(false))
+        for(Piece p : board.getAllPieces())
         {
             p.setActor(new PieceActor(p, mainStage));
         }

@@ -104,12 +104,8 @@ public class Rook extends Piece
     public String toString()
     {
         if(isWhite)
-        {
             return "\u200A\u2656\u200A";
-        }
         else
-        {
             return "\u200A\u265C\u200A";
-        }
     }
 }
